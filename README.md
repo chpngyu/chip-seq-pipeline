@@ -1,2 +1,4 @@
 # Pipeline of ChIP-seq analysis
-computational pipeline of ENCODE ChIP-seq analysis
+
+
+Computational pipeline of ENCODE ChIP-seq analysis

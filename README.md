@@ -6,7 +6,8 @@ Computational pipeline of ENCODE ChIP-seq analysis
 For runing whole pipene line for a TF, the command line is
 perl ....
 
-## (1) Download raw data from ENCODE and genome sequence
+The detail processes are described followings step-by-step 
+## (1) Download raw data from ENCODE and prepare a reference genome sequence
 
 ## (2) Preprocessing and Aligning reads to the reference genome
 The following code is used to deal with paired-end reads

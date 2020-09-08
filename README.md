@@ -9,19 +9,18 @@ perl ....
 
 ## The computational pipeline:
 ```
-	Data download 
-	Select a control (the DNA control)
-	ChIP-seq read quality QC
-	Map reads to the human genome (GRCh38) using bowtie2
-	Read peaks calling using MACS2 
-	Remove peak regions overlapping any blacklisted regions
-	Merge reads from replicates? 
-1.	For each replicate, use MEME-chip to compute the top 5 PWMs from the top 500 peaks (200bp each, ±100bp from the peak summit). If none of the PWMs is supported by >100 peaks, remove that replicate. If < 2 replicate passes this test, abandon that experiment.
-2.	(using PWM similarity instead of IDR? ) If more than one replicate passed the above test, conduct the Irreproducible Discovery Rate (IDR) test: If the IDR score (-log[IDR]) <1.5, abandon the experiment.
-	Single experiment: 
-If more than one replicate passed the above two tests, merge the “passed” replicates. Select the top 500 peaks to calculate PWMs by MEME-chip: Report the PWMs supported by > 100 peaks
-1.	
-	Multiple experiments: 
+(A)	Data download 
+(B)	Select a control (the DNA control)
+(C)	ChIP-seq read quality QC
+(D)	Map reads to the human genome (GRCh38) using bowtie2
+(E)	Read peaks calling using MACS2 
+(F)	Remove peak regions overlapping any blacklisted regions
+(G)	Merge reads from replicates? 
+  G1.	For each replicate, use MEME-chip to compute the top 5 PWMs from the top 500 peaks (200bp each, ±100bp from the peak summit). If none of the PWMs is supported by >100 peaks, remove that replicate. If < 2 replicate passes this test, abandon that experiment.
+  G2.	(using PWM similarity instead of IDR? ) If more than one replicate passed the above test, conduct the Irreproducible Discovery Rate (IDR) test: If the IDR score (-log[IDR]) <1.5, abandon the experiment.
+(H)	Single experiment: 
+If more than one replicate passed the above two tests, merge the “passed” replicates. Select the top 500 peaks to calculate PWMs by MEME-chip: Report the PWMs supported by > 100 peaks	
+(I)	Multiple experiments: 
 Treat each experiment as above. If only one experiment passes the above tests, do as the case of one experiment.
 If > 1 experiment passed the tests. Use the ranking criterion to select the top 500 peaks from the experiments to compute consensus PWMs and report those PWMs supported by > 100 peaks. 
 However, before computing the ranking scores we should compute the PCCs between the PWMs of every 2 experiments in 2 different cell lines or samples. If there are more than 2 experiments available, throw out any experiment that does not show at least one motif having PCC>0.80 with a motif from any other experiment. If there are only two experiments and neither experiment has at least one motif with PCC>0.80, select the experiment with PWMs better supported by larger numbers of peaks.

@@ -3,25 +3,14 @@
 <img src="https://github.com/chpngyu/pipeline-of-chip-seq/blob/master/data/flowchart.png">
 Computational pipeline of ENCODE ChIP-seq analysis
 
-Exact commands for running the pipeline for a single TF are provided in the following Perl scripts:
-
-1. `chip_seq_download.pl`. This script downloads a list of ENCODE experiments provided as...
-2. `chip_seq_pipeline.pl`. Assuming the experimental data have been downloaded using `chip_seq_download.pl`, this script navigates the directory structure set up during download to carry out the first steps of the pipeline, as shown below...
-
-<img src="https://github.com/chpngyu/pipeline-of-chip-seq/blob/master/data/perl_directory_structure.png">
-
-3. `etc.`...
-
-
-
 
 ## The computational pipeline:
 ```
 (A)	Data download 
 (B)	Select a control (the DNA control)
 (C)	ChIP-seq read quality QC
-(D)	Map reads to the human genome (GRCh38) using bowtie2
-(E)	Read peaks calling using MACS2 
+(D)	Map reads to the genome (e.g., GRCh38 for human) using bowtie2
+(E)	Call read peaks using MACS2 
 (F)	Remove peak regions overlapping any blacklisted regions
 (G)	Merge reads from replicates? 
   G1.	For each replicate, use MEME-chip to compute the top 5 PWMs from the top 500 peaks (200bp each, ±100bp from the peak summit). If none of the PWMs is supported by >100 peaks, remove that replicate. If < 2 replicate passes this test, abandon that experiment.
@@ -50,3 +39,14 @@ mkdir QC fastqc
 $Trimmomatic PE -threads 1 $R1 $R2 QC/${R1%.fastq.gz}_trim_paired.fastq.gz QC/${R1%.fastq.gz}_trim_unpaired.fastq.gz QC/${R2%.fastq.gz}_trim_paired.fastq.gz QC/${R2%.fastq.gz}_trim_unpaired.fastq.gz ILLUMINACLIP:$Trimmomatic_Path/adapters/TruSeq3-PE-2.fa:2:40:12:8:true LEADING:10 SLIDINGWINDOW:4:15 MINLEN:50 2> read_processing.log
 $FASTQC QC/*trim_paired.fastq.gz -o fastqc
 ```
+
+## Supplementary Perl Scripts
+
+Exact commands for running the pipeline for a single TF are provided in the following Perl scripts:
+
+1. `chip_seq_download.pl`. This script downloads a list of ENCODE experiments provided as...
+2. `chip_seq_pipeline.pl`. Assuming the experimental data have been downloaded using `chip_seq_download.pl`, this script navigates the directory structure set up during download to carry out the first steps of the pipeline, as shown below...
+
+<img src="https://github.com/chpngyu/pipeline-of-chip-seq/blob/master/data/perl_directory_structure.png">
+
+3. `etc.`...

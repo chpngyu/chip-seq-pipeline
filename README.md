@@ -3,8 +3,16 @@
 <img src="https://github.com/chpngyu/pipeline-of-chip-seq/blob/master/data/flowchart.png">
 Computational pipeline of ENCODE ChIP-seq analysis
 
-For runing whole pipene line for a TF, the command line is
-perl ....
+Exact commands for running the pipeline for a single TF are provided in the following Perl scripts:
+
+1. `chip_seq_download.pl`. This script downloads a list of ENCODE experiments provided as...
+2. `chip_seq_pipeline.pl`. Assuming the experimental data have been downloaded using `chip_seq_download.pl`, this script navigates the directory structure set up during download to carry out the first steps of the pipeline, as shown below...
+
+<img src="https://github.com/chpngyu/pipeline-of-chip-seq/blob/master/data/perl_directory_structure.png">
+
+3. `etc.`...
+
+
 
 
 ## The computational pipeline:

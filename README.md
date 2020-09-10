@@ -1,7 +1,5 @@
 # Pipeline of ChIP-seq analysis
 
-<img src="https://github.com/chpngyu/pipeline-of-chip-seq/blob/master/images/flowchart.png">
-Computational pipeline of ENCODE ChIP-seq analysis
 
 ## <a name="contents"></a>Contents
 
@@ -33,6 +31,9 @@ Treat each experiment as above. If only one experiment passes the above tests, d
 If > 1 experiment passed the tests. Use the ranking criterion to select the top 500 peaks from the experiments to compute consensus PWMs and report those PWMs supported by > 100 peaks. 
 However, before computing the ranking scores we should compute the PCCs between the PWMs of every 2 experiments in 2 different cell lines or samples. If there are more than 2 experiments available, throw out any experiment that does not show at least one motif having PCC>0.80 with a motif from any other experiment. If there are only two experiments and neither experiment has at least one motif with PCC>0.80, select the experiment with PWMs better supported by larger numbers of peaks.
 ```
+
+<img src="https://github.com/chpngyu/pipeline-of-chip-seq/blob/master/images/flowchart.png">
+
 
 The detail processes are described followings step-by-step 
 ### (1) <a name="download-genome"></a>Download raw data from ENCODE and prepare a reference genome sequence

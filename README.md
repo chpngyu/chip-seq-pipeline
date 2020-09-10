@@ -48,6 +48,10 @@ Exact commands for running the pipeline for a single TF are provided in the foll
 
 <img src="https://github.com/chpngyu/pipeline-of-chip-seq/blob/master/images/directory_structure.png">
 
+For example:
+
+<img src="https://github.com/chpngyu/pipeline-of-chip-seq/blob/master/images/example.png">
+
 2. `chip_seq_pipeline.pl`. Assuming the experimental data have been downloaded using `chip_seq_download.pl`, this script navigates the directory structure set up during download to carry out the first steps of the pipeline, as shown below...
 
 <img src="https://github.com/chpngyu/pipeline-of-chip-seq/blob/master/images/perl_pipeline.png">

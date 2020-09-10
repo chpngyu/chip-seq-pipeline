@@ -1,6 +1,6 @@
 # Pipeline of ChIP-seq analysis
 
-<img src="https://github.com/chpngyu/pipeline-of-chip-seq/blob/master/data/flowchart.png">
+<img src="https://github.com/chpngyu/pipeline-of-chip-seq/blob/master/images/flowchart.png">
 Computational pipeline of ENCODE ChIP-seq analysis
 
 
@@ -45,8 +45,11 @@ $FASTQC QC/*trim_paired.fastq.gz -o fastqc
 Exact commands for running the pipeline for a single TF are provided in the following Perl scripts:
 
 1. `chip_seq_download.pl`. This script downloads a list of ENCODE experiments provided as...
+
+<img src="https://github.com/chpngyu/pipeline-of-chip-seq/blob/master/images/directory_structure.png">
+
 2. `chip_seq_pipeline.pl`. Assuming the experimental data have been downloaded using `chip_seq_download.pl`, this script navigates the directory structure set up during download to carry out the first steps of the pipeline, as shown below...
 
-<img src="https://github.com/chpngyu/pipeline-of-chip-seq/blob/master/data/directory_structure.png">
+<img src="https://github.com/chpngyu/pipeline-of-chip-seq/blob/master/images/perl_pipeline.png">
 
 3. `etc.`...

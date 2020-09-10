@@ -3,8 +3,19 @@
 <img src="https://github.com/chpngyu/pipeline-of-chip-seq/blob/master/images/flowchart.png">
 Computational pipeline of ENCODE ChIP-seq analysis
 
+## <a name="contents"></a>Contents
 
-## The computational pipeline:
+* [Computational Pipeline](#computational-pipeline)
+	* [Download raw data from ENCODE and prepare a reference genome sequence](#download-genome)
+	* [Preprocessing and aligning reads to the reference genome](#preprocessing-aligning)
+* [Supplementary Perl Scripts](#supplementary-perl-scripts)
+* [Supplementary Data](#supplementary-data)
+* [Acknowledgments](#acknowledgments)
+* [Citation](#citation)
+* [References](#references)
+
+
+## <a name="computational-pipeline"></a>Computational Pipeline:
 ```
 (A)	Data download 
 (B)	Select a control (the DNA control)
@@ -24,9 +35,9 @@ However, before computing the ranking scores we should compute the PCCs between 
 ```
 
 The detail processes are described followings step-by-step 
-## (1) Download raw data from ENCODE and prepare a reference genome sequence
+### (1) <a name="download-genome"></a>Download raw data from ENCODE and prepare a reference genome sequence
 
-## (2) Preprocessing and Aligning reads to the reference genome
+### (2) <a name="preprocessing-aligning"></a>Preprocessing and aligning reads to the reference genome
 The following code is used to deal with paired-end reads
 ```Shell
 BASE=/home/your/working/directory
@@ -40,7 +51,8 @@ $Trimmomatic PE -threads 1 $R1 $R2 QC/${R1%.fastq.gz}_trim_paired.fastq.gz QC/${
 $FASTQC QC/*trim_paired.fastq.gz -o fastqc
 ```
 
-## Supplementary Perl Scripts
+
+## <a name="supplementary-perl-scripts"></a>Supplementary Perl Scripts
 
 Exact commands for running the pipeline for a single TF are provided in the following Perl scripts:
 
@@ -52,8 +64,33 @@ For example:
 
 <img src="https://github.com/chpngyu/pipeline-of-chip-seq/blob/master/images/example.png">
 
-2. `chip_seq_pipeline.pl`. Assuming the experimental data have been downloaded using `chip_seq_download.pl`, this script navigates the directory structure set up during download to carry out the first steps of the pipeline, as shown below...
+2. `chip_seq_pipeline.pl`. Assuming the experimental data have been downloaded using `chip_seq_download.pl`, this script navigates the directory structure set up during download to carry out the first steps of the pipeline, as shown below (SE=single-end; PE=paired-end reads)...
 
 <img src="https://github.com/chpngyu/pipeline-of-chip-seq/blob/master/images/perl_pipeline.png">
 
 3. `etc.`...
+
+
+## <a name="supplementary-data"></a>Supplementary Data
+Supplementary data is available in the data folder within this repository. This includes the following files:
+
+* File 1. Description.
+* File 2. Description.
+* ...
+
+## <a name="acknowledgments"></a>Acknowledgments
+The authors acknowledgme XYZ...
+
+
+## <a name="citation"></a>Citation
+When using this software, please refer to and cite:
+
+>THE PAPER
+
+and this page:
+
+>https://github.com/chpngyu/pipeline-of-chip-seq/
+
+
+## <a name="references"></a>References
+* EXAMPLE: Yang Z. 2014. <a target="_blank" href="https://www.oxfordscholarship.com/view/10.1093/acprof:oso/9780199602605.001.0001/acprof-9780199602605">*Molecular Evolution: A Statistical Approach*</a>. New York, NY: Oxford University Press.

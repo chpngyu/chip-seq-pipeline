@@ -64,7 +64,7 @@ print "WORKING_DIRECTORY=$WORK\n";
 #########################################################################################
 # LOOP FILE TO CREATE HASH TREE
 
-# FIRST RECORDS:
+# EXAMPLE FIRST RECORDS IN INPUT FILE:
 #Target name	directory_name	AC	type	Library	url
 #abd-A	abd_A	ENCSR609JDR	replicate	ENCLB367MZH	https://www.encodeproject.org/files/ENCFF036RZV/@@download/ENCFF036RZV.fastq.gz
 #abd-A	abd_A	ENCSR609JDR	replicate	ENCLB506QBD	https://www.encodeproject.org/files/ENCFF999PWE/@@download/ENCFF999PWE.fastq.gz
@@ -203,11 +203,6 @@ foreach my $directory_name (sort keys %url_data) {
 				if(-f "$WORK\/$directory_name\/$experiment\/$replicate\/$url_file_name" && -f "$WORK\/$directory_name\/$experiment\/$replicate\/wget.done") {
 					print "\n### The following URL has already been downloaded: $url\n### Moving on!\n\n";
 				} else {
-					#my $wget_command = 'nohup wget ' . $url . ' > wget.log 2> /dev/null < /dev/null && touch wget.done &'; # doesn't work
-					#my $wget_command = 'wget ' . $url . ' 2>&1 | tee wget.log && touch wget.done'; # doesn't work
-					#my $wget_command = 'wget ' . $url . ' 2>&1 wget.log && touch wget.done'; # doesn't work
-					#my $wget_command = 'wget ' . $url . ' > wget.log && touch wget.done';
-					#my $wget_command = 'wget ' . $url . ' 2>&1 wget.log'; # doesn't work
 					my $wget_command = 'wget ' . $url . ' > wget.log'; # WORKS. Guess you juts can't combine wget with a second (or preceding 'time') command.
 					
 					print "\n### wget_command:\n$wget_command\n\n";
@@ -222,19 +217,6 @@ foreach my $directory_name (sort keys %url_data) {
 					
 					print "\n";
 					
-	#				# Wait for the download to finish, indicated by the presence of wget.done
-	#				# Wait a maximum of 30 minutes
-	#				
-	#				my $time_slept = 0;
-	#				while() {
-	#					sleep 15;
-	#					$time_slept += 15;
-	#					
-	#					if($time_slept > ) {
-	#						die "\n### WARNING: wget command took over 30 minutes. Download script ABORTED.\n\n";
-	#					}
-	#				}
-	
 				} # finish downloading block
 			}
 		}

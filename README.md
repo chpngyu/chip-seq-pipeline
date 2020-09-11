@@ -57,7 +57,7 @@ $FASTQC QC/*trim_paired.fastq.gz -o fastqc
 
 Exact commands for running the pipeline for a single TF are provided in the following Perl scripts:
 
-1. `chip_seq_download.pl`. This script downloads a list of ENCODE experiments provided as a TAB-delimited input file with the following six (named) columns:
+1. `chip_seq_download.pl`. This script downloads a user-provided list of ENCODE experiments, i.e., their FASTQ data. It should be called from the directory you wish to populate with directories and subdirectories containing the data. Input should be provided as a TAB-delimited input file with the following six (named) columns:
 
 	* `Target name`. The name of the transcription factor (*e.g.*, **adb-A**).
 	* `directory_name`. The name of the directory to create in which to store the transcription factor's data (*e.g.*, **adb_A**)

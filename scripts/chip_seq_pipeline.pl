@@ -46,11 +46,8 @@ my $adaptor_PE = '/home/cnelson/bin/Trimmomatic-0.39/adapters/TruSeq3-PE-2.fa';
 my $NUM_TOP_PEAKS = 500; #100; #default=500;
 my $MFOLD_MIN = 5; #2; # 5
 my $MFOLD_MAX = 50; # 50
-#my $blacklist = '/home/cnelson/ChIP-seq/blacklist/dm6-blacklist.v2.REMOVEchrPREFIX.bed'; # '/home/cnelson/ChIP-seq/blacklist/ENCFF023CZC_sorted.bed';
 my $blacklist = '/home/cnelson/ChIP-seq/blacklist/ENCFF023CZC_sorted.bed';
-#my $GENOME_FASTA = '/home/cnelson/genomes/Drosophila_melanogaster.BDGP6.22.dna.toplevel.fa'; # '/home/cnelson/genomes/Homo_sapiens.GRCh38.dna.primary_assembly.fa';
 my $GENOME_FASTA = '/home/cnelson/genomes/Homo_sapiens.GRCh38.dna.primary_assembly.fa';
-#my $GENOME_IDX_PREFIX = '/home/cnelson/genomes/bowtie_index_dm6/Drosophila_melanogaster.BDGP6.22.dna.toplevel'; # '/home/cnelson/genomes/bowtie_2.3.5.1_index/Homo_sapiens.GRCh38.dna.primary_assembly'; # no extension; bowtie-indexed
 my $GENOME_IDX_PREFIX = '/home/cnelson/genomes/bowtie_2.3.5.1_index/Homo_sapiens.GRCh38.dna.primary_assembly'; # no extension; bowtie-indexed
 # the above has been accomplished using run_bowtie_indexing_dm6.sh
 #########################################################################################

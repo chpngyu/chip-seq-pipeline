@@ -52,12 +52,24 @@ $Trimmomatic PE -threads 1 $R1 $R2 QC/${R1%.fastq.gz}_trim_paired.fastq.gz QC/${
 $FASTQC QC/*trim_paired.fastq.gz -o fastqc
 ```
 
+## <a name="analysis-scripts"></a>Analysis Scripts
+
+In addition to published tools, our analyses utilized the following custom scripts:
+
+1. `pwm.py`. **!!ADD DESCRIPTION!!**
+2. `motif_cluster.py`. **!!ADD DESCRIPTION!!**
+3. `consensus_pwm.py`. **!!ADD DESCRIPTION!!**
+4. `correlation.py`. **!!ADD DESCRIPTION!!**
+5. `peak_motif_ranges.R`. **!!ADD DESCRIPTION!!**
+6. `score_quantile.py`. **!!ADD DESCRIPTION!!**
+7. `top_peak_sel.py`. **!!ADD DESCRIPTION!!**
+
 
 ## <a name="supplementary-perl-scripts"></a>Supplementary Perl Scripts
 
-Exact commands for running the pipeline for a single TF are provided in the following Perl scripts:
+Exact commands for running the pipeline for a single transcription factor (TF) are provided in the following Perl scripts:
 
-1. `chip_seq_download.pl`. This script downloads a user-provided list of ENCODE experiments, i.e., their FASTQ data. It should be called from the directory you wish to populate with directories and subdirectories containing the data. Input should be provided as a TAB-delimited input file with the following six (named) columns:
+1. `chip_seq_download.pl`. This script downloads a user-provided list of ENCODE experiments, *i.e.*, the FASTQ data from ENCODE TF ChIP-seq assays. It should be called from the directory you wish to populate with directories and subdirectories containing the data. Input should be provided as a TAB-delimited input file with the following six (named) columns:
 
 	* `Target name`. The name of the transcription factor (*e.g.*, **adb-A**).
 	* `directory_name`. The name of the directory to create in which to store the transcription factor's data (*e.g.*, **adb_A**)
@@ -90,11 +102,37 @@ achi	achi	ENCSR959SWC	control	ENCLB240LXI_control	https://www.encodeproject.org/
 
 <img src="https://github.com/chpngyu/pipeline-of-chip-seq/blob/master/images/example.png">
 
-2. `chip_seq_pipeline.pl`. Assuming the experimental data have been downloaded using `chip_seq_download.pl`, this script navigates the directory structure set up during download to carry out the first steps of the pipeline, as shown below (SE=single-end; PE=paired-end reads)...
+2. `chip_seq_pipeline.pl`. This script can be used after the experimental data have been downloaded using `chip_seq_download.pl`. Alternatively, the user may download their own data, provided they have placed them in directories precisely matching the structure described above. 
+
+	This script **must be called from within the directory corresponding to a single Target (TF)**. This means the user must first navigate to one of the `directory_name` values specified above, e.g., abd_A (input file example above) or ATF3 (input figure example above). This means that multiple TFs can be run in parallel, but that a single TF cannot. The reason for this choice is that several steps in the pipeline (e.g., BOWTIE2) allow the user to specify multiple CPUs for further parallelism.
+	
+	This script navigates the directory structure starting at this point, carrying out the first steps of the pipeline, proceeding from quality control (Trimmomatic; FASTQC) to read mapping (BOWTIE2) to peak calling (MACS2) to motif discovery (MEME-chip). **Of utmost importance, the user must alter the code block at the top of the script, `### MANUALLY SET GLOBAL VARIABLES ###`, to set paths to each tool installed on their system.** Specifically, the user must provide paths or values from the following:
+
+	* `FASTQC` (v0.11.8): path to software
+	* `TRIMMOMATIC` (v0.39): path to software
+	* `BOWTIE2` (v2.3.5 / 64-bit): path to software
+	* `SAMTOOLS` (v1.9 using htslib 1.9): path to software
+	* `BEDTOOLS` (v2.28.0): path to software
+	* `MACS2` (v2.1.2): path to software
+	* `MACS2_gsize`: a value, e.g. `hs` for *Homo sapeins* or `dm` for *Drosophila melanogaster*
+	* `PEAK_RADIUS`: a value, the radius of read calling peaks, *e.g.*, `100` to extend peaks 100 bp in either direction from the peak summit.
+	* `MIN_PEAK_SCORE`: a value, the minimum peak score required, *e.g.*, `13`.
+	* `MEME_CHIP` (v5.0.5): path to software
+	* `CCUT`: a value, the size (bp) to which peak regions should be trimmed for MEME-chip, e.g., `100`. This allows MEME-chip to examine the central region of the peaks for motifs while comparing to the flanking regions as a control for local sequence content. **!!CHECK WITH CHUN-PING!!**
+	* `adaptor_SE`: path to file (FASTA format) containing sequencing adaptors for single-end (SE) experiments, *e.g.*, `TruSeq3-SE.fa`
+	* `adaptor_PE`: path to file (FASTA format) containing sequencing adaptors for paired-end experiments, *e.g.*, `TruSeq3-PE-2.fa`
+	* `NUM_TOP_PEAKS`: a value, the number of top peaks to consider, *e.g.*, 500
+	* `MFOLD_MIN`: a value, the minimum fold depth enrichment required to call a peak for MACS2, *e.g.*, `5`. **!!CHECK WITH CHUN-PING!!**
+	* `MFOLD_MAX`: a value, the maximum fold depth enrichment allowed to call a peak for MACS2, *e.g.*, `50`. **!!CHECK WITH CHUN-PING!!**
+	* `blacklist`: path to file (BED format) containing a blacklist (excluded genome regions, including repetitive and low-complexity regions), *e.g.*, `ENCFF023CZC_sorted.bed`. See Amemiya *et al.* (2008).
+	* `GENOME_FASTA`: path to file (FASTA format) containing the primary genome assembly for the organism of interest, *e.g.*, `Homo_sapiens.GRCh38.dna.primary_assembly.fa`.
+	* `GENOME_IDX_PREFIX`: path to file (genome index) created using BOWTIE2, *e.g.*, `Homo_sapiens.GRCh38.dna.primary_assembly`. This can be accomplished using the following command: `bowtie2-build -f Homo_sapiens.GRCh38.dna.primary_assembly.fa Homo_sapiens.GRCh38.dna.primary_assembly`.
+	
+	The pipeline is shown below. Note that these tools use slightly different commands for single-end (SE) and paired-end (PE) reads (see script source code).
 
 <img src="https://github.com/chpngyu/pipeline-of-chip-seq/blob/master/images/perl_pipeline.png">
 
-3. `etc.`...
+3. `PWM_pipeline.pl`. IDR and PCC. **!!ADD DESCRIPTION!!**
 
 
 ## <a name="supplementary-data"></a>Supplementary Data
@@ -111,7 +149,7 @@ The authors acknowledgme XYZ...
 ## <a name="citation"></a>Citation
 When using this software, please refer to and cite:
 
->THE PAPER
+>THE PAPER **!!ADD INFO!!**
 
 and this page:
 
@@ -119,4 +157,5 @@ and this page:
 
 
 ## <a name="references"></a>References
-* EXAMPLE: Yang Z. 2014. <a target="_blank" href="https://www.oxfordscholarship.com/view/10.1093/acprof:oso/9780199602605.001.0001/acprof-9780199602605">*Molecular Evolution: A Statistical Approach*</a>. New York, NY: Oxford University Press.
+* Amemiya HM, Kundaje A, Boyle AP. 2019. <a target="_blank" href="https://www.nature.com/articles/s41598-019-45839-z">The ENCODE Blacklist: Identification of Problematic Regions of the Genome</a>. *Scientific Reports* **9**:9354.
+

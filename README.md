@@ -12,6 +12,8 @@
 	* (6) [Motif discovery](#motif-discovery)
 	* (7) [Replicate quality control and merging](#replicate-quality-control)
 	* (8) [Representative motif selection](#representative-motif-selection)
+* [Software and Data Versions Used](#software-and-data)
+* [Analysis Scripts](#analysis-scripts)
 * [Supplementary Perl Scripts](#supplementary-perl-scripts)
 * [Supplementary Data](#supplementary-data)
 * [Acknowledgments](#acknowledgments)
@@ -28,69 +30,185 @@ Our pipeline is represented in the following figure and described in detail belo
 
 ### (1) <a name="data-download"></a>Data download
 
-Download raw data from ENCODE and prepare a reference genome sequence
+Raw transcription factor ChIP-seq FASTQ reads were downloaded directly from ENCODE. For example, for GATA1, to obtain the SE36nt reads associated with Accession ID ENCFF000YND (experiment ENCSR000EFT, library ENCLB209AJT), the following URL was used:
+
+`https://www.encodeproject.org/files/ENCFF000YND/@@download/ENCFF000YND.fastq.gz`
 
 
 ### (2) <a name="control-selection"></a>Control selection
 
-Select a control (the DNA control)
+Controls were selected as described in the manuscript, with preference for type input DNA, as shown in the figure below.
 
+<img src="https://github.com/chpngyu/pipeline-of-chip-seq/blob/master/images/choosing_controls.png">
 
 ### (3) <a name="read-quality-control"></a>Read quality control
 
-ChIP-seq read quality QC
-
-The following code is used to deal with paired-end reads
+Read quality control (QC) was performed using Trimmomatic, with command-line argument values as decribed in the manuscript. For paired-end (PE) reads, the following commands were used:
 
 ```Shell
+#set global variables
 BASE=/home/your/working/directory
 Trimmomatic_Path=/where/is/Trimmomatic
 Trimmomatic='java -jar /path/Trimmomatic-0.36/trimmomatic-0.36.jar'
+
+# replace LGJ20-XQ41_R1_001 and LGJ20-XQ41_R2_001 with your read IDs
 cd $BASE/Sample_one/
 R1=LGJ20-XQ41_R1_001.fastq.gz
 R2=LGJ20-XQ41_R2_001.fastq.gz
 mkdir QC fastqc
+
+# QC
 $Trimmomatic PE -threads 1 $R1 $R2 QC/${R1%.fastq.gz}_trim_paired.fastq.gz QC/${R1%.fastq.gz}_trim_unpaired.fastq.gz QC/${R2%.fastq.gz}_trim_paired.fastq.gz QC/${R2%.fastq.gz}_trim_unpaired.fastq.gz ILLUMINACLIP:$Trimmomatic_Path/adapters/TruSeq3-PE-2.fa:2:40:12:8:true LEADING:10 SLIDINGWINDOW:4:15 MINLEN:50 2> read_processing.log
+
+# check read quality
 $FASTQC QC/*trim_paired.fastq.gz -o fastqc
+```
+
+For single-end (SE) reads, the Trimmomatic call was replaced with the following:
+
+```Shell
+$Trimmomatic SE -threads 1 $READ QC/${READ%.fastq.gz}_trim_paired.fastq.gz ILLUMINACLIP:/home/cpyu/bin/Trimmomatic-0.36/adapters/TruSeq3-SE.fa:2:40:12 LEADING:10 SLIDINGWINDOW:4:15 MINLEN:30 2> read_processing.log
 ```
 
 
 ### (4) <a name="read-mapping"></a>Read mapping
 
-Preprocessing and aligning reads to the reference genome
-Map reads to the genome (e.g., GRCh38 for human) using bowtie2
+Reads were preprocessed and aligned reads to the appropriate reference genome (e.g., GRCh38 for human) using bowtie2, as shown below.
 
+```Shell
+#set global variables
+export GENOME=/home/user/human/genome/Homo_sapiens.GRCh38.dna.primary_assemblyexport
+BASE_PATH=/home/user/human/ChIP-seq/
+export SUFFIX=_trim_paired.fastq.gz
+cd $BASE_PATH/GENE_ID/replicate1
+
+# replace _read_ID_ with your IDs
+export R1=QC/_read_ID_$SUFFIX
+export R2=QC/_read_ID_$SUFFIX
+
+# do alignment
+time bowtie2 -p 4 -x $GENOME -1 $R1 -2 $R2 -S alignment.sam 2> log.txt
+
+# if single-read, use
+export READ=QC/_read_ID_$SUFFIX
+time bowtie2 -p 4 -x $GENOME -U $READ -S alignment.sam 2> log.txt
+
+#remove unmapped reads and duplicated reads (268= Read unmapped (4) or  Mate unmapped (8) or  Not primary alignment (256))
+samtools view -h -F 268 -q 5 -bS alignment.sam > unique_alignment.bam
+samtools sort unique_alignment.bam -o unique_alignment_sorted.bam
+samtools rmdup unique_alignment_sorted.bam unique_alignment_sorted_rd.bam
+rm alignment.sam unique_alignment.bam unique_alignment_sorted.bam
+```
 
 ### (5) <a name="peak-calling"></a>Peak calling
 
-Call read peaks using MACS2 
-Remove peak regions overlapping any blacklisted regions
+Peak calling was performed using MACS2 (200bp each, ±100bp from the peak summit), followed by removal of peak regions overlapping any blacklisted regions.
+
+<img src="https://github.com/chpngyu/pipeline-of-chip-seq/blob/master/images/motif_discovery_blacklist.png">
+
+```
+#set global variables
+export CURR=/home/user/human/ChIP-seq/
+cd $CURR/GENE_ID/replicate1
+export CONTROL="control1.bam control2.bam" # control string may include multiple files
+
+# individual replicate, paired-end (PE) reads
+macs2 callpeak -t unique_alignment_sorted_rd.bam -c $CONTROL -f BAMPE --gsize hs --outdir macs2
+
+# individual replicate, single-read (SE) reads
+macs2 callpeak -t unique_alignment_sorted_rd.bam -c $CONTROL -f BAM --gsize hs --outdir macs2
+
+## merging two replicates, PE reads
+macs2 callpeak -t replicate1.bam replicate2.bam -c $CONTROL $ CONTROL -f BAMPE --gsize hs --outdir macs2
+
+# mergin two replicates, SE reads 
+macs2 callpeak -t replicate1.bam replicate2.bam -c $CONTROL $ CONTROL -f BAM --gsize hs --outdir macs2
+```
 
 
 ### (6) <a name="motif-discovery"></a>Motif discovery
 
+Motif discovery was performed using MEME-chip as described in the manuscript, using the top 500 peaks to determine five motifs per analysis.
+
+```
+#set global variables
+export CURR=/home/user/human/ChIP-seq/
+export GENOME=/home/user/human/genome/Homo_sapiens.GRCh38.dna.primary_assembly.fa
+export BlackList=/home/human/blacklist/ENCFF023CZC_sorted.bed
+export NoTopPeak=500 # number of top peaks to analyze
+
+# navigate to replicate directory, extract peaks
+cd $CURR/GENE_ID/replicate1/
+awk 'BEGIN {WIDTH=100} {if($2<=WIDTH) print $1 "\t1\t" $2+WIDTH "\t" $4 "\t" $5; else print $1 "\t" $2-WIDTH "\t" $2+WIDTH "\t" $4 "\t" $5}' macs2/NA_summits.bed > extended_peaks.bed
+
+# remove blacklist regions from peaks
+bedtools subtract -a extended_peaks.bed -b $BlackList -A > extended_bk_removal_peaks.bed
+sort -r -k5 -n extended_bk_removal_peaks.bed| head -n $NoTopPeak > top_peaks.bed
+bedtools getfasta -bed top_peaks.bed -fi $GENOME > top_peaks.fa
+
+# motif discovery
+meme-chip -meme-nmotifs 5 top_peaks.fa
+
+```
+
 
 ### (7) <a name="replicate-quality-control"></a>Replicate quality control and merging
 
-Merge reads from replicates? 
+Replicates were merged as described in the manuscript. Briefly, replicates were required to yield:
 
-For each replicate, use MEME-chip to compute the top 5 PWMs from the top 500 peaks (200bp each, ±100bp from the peak summit). If none of the PWMs is supported by >100 peaks, remove that replicate. If < 2 replicate passes this test, abandon that experiment.
+1. at least one position weight matrix (PWM) supported by >100 peaks and an E-value of <0.0001
+2. and IDR score (-log[IDR]) ≥1.5 when compared to the other replicate of the same experiment
 
-(using PWM similarity instead of IDR? ) If more than one replicate passed the above test, conduct the Irreproducible Discovery Rate (IDR) test: If the IDR score (-log[IDR]) <1.5, abandon the experiment.
+Experiments were required to have at least 2 passing replicates, and excluded otherwise.
 
-Single experiment: 
-If more than one replicate passed the above two tests, merge the “passed” replicates. Select the top 500 peaks to calculate PWMs by MEME-chip: Report the PWMs supported by > 100 peaks	
+```
+# normalizing scores for each peak
+python score_quantile.py -s sample1_bk_removal.bed -g sample1 -o sample1_score.bed # repeat for all samples
 
-Multiple experiments: 
-Treat each experiment as above. If only one experiment passes the above tests, do as the case of one experiment.
-If > 1 experiment passed the tests. Use the ranking criterion to select the top 500 peaks from the experiments to compute consensus PWMs and report those PWMs supported by > 100 peaks. 
+# concatenating all scoring peaks and grouping peaks into clusters
+cat sample1_score.bed > total.bed
+cat sample2_score.bed >> total.bed #... for all samples
+
+# sort and cluster
+bedtools sort -i total.bed > temp.bed
+bedtools cluster -i temp.bed > total_cluter.bed
+rm *_score.bed total.bed temp.bed
+
+#select top 500 peaks
+python top_peak_sel.py -i total_cluter.bed -o top_combined.bed
+
+#calculate motif position weight matrix (PWM) correlations
+python correlation.py -m1 combined.meme -o motif_pcc.txt
+python motif_cluster.py motif_pcc.txt occurrences.txt
+```
 
 
 ### (8) <a name="representative-motif-selection"></a>Representative motif selection
 
-One per cell line or tissue
+**Single experiment**. For transcription factors represented by **one passing experiment** in the ENCODE data, replicates were merged and steps 5 ([peak calling](#peak-calling) and 6 ([motif discovery](#motif-discovery) were repeated using the merged replicates. Final representative motifs were called using these merged replicates.
 
-However, before computing the ranking scores we should compute the PCCs between the PWMs of every 2 experiments in 2 different cell lines or samples. If there are more than 2 experiments available, throw out any experiment that does not show at least one motif having PCC>0.80 with a motif from any other experiment. If there are only two experiments and neither experiment has at least one motif with PCC>0.80, select the experiment with PWMs better supported by larger numbers of peaks.
+**Multiple experiments**.
+For transcription factors represented by **more than one passing experiment** in the ENCODE data, one experiment was selected to represent each biosample (e.g., cell or tissue type). The ranking method described in the manuscript was then used to select the top 500 peaks from all experiments, and step 6 ([motif discovery](#motif-discovery) was repeated using the top peaks. Final representative motifs were called using these top peaks.
+
+**!!CHUN-PING!! please edit the following, I do not understand it**
+
+> However, before computing the ranking scores we should compute the PCCs between the PWMs of every 2 experiments in 2 different cell lines or samples. If there are more than 2 experiments available, throw out any experiment that does not show at least one motif having PCC>0.80 with a motif from any other experiment. If there are only two experiments and neither experiment has at least one motif with PCC>0.80, select the experiment with PWMs better supported by larger numbers of peaks.
+
+
+## <a name="software-and-data"></a>Software and Data Versions Used
+* Genome
+	* Human: GRCh38
+	* Mouse: GRCm38
+* Blacklists
+	* Amemiya et al. (2019)
+* FASTQQ v0.11.8
+* TRIMMOMATIC v0.39
+* BOWTIE2 v2.3.5 (64-bit)
+* MACS2 v2.1.2 (https://github.com/taoliu/MACS)
+* MEME_CHIP v5.0.5
+* SAMTOOLS v1.9 (using htslib 1.9)
+* BEDTOOLS v2.28.0
+* IDR (https://github.com/nboley/idr)
 
 
 ## <a name="analysis-scripts"></a>Analysis Scripts

@@ -190,136 +190,7 @@ python motif_cluster.py motif_pcc.txt occurrences.txt
 **Multiple experiments**.
 For transcription factors represented by **more than one passing experiment** in the ENCODE data, one experiment was selected to represent each biosample (e.g., cell or tissue type). The ranking method described in the manuscript was then used to select the top 500 peaks from all experiments, and step 6 ([motif discovery](#motif-discovery) was repeated using the top peaks. Final representative motifs were called using these top peaks.
 
-**!!CHUN-PING!! please edit the following, I do not understand it**
-
-> However, before computing the ranking scores we should compute the PCCs between the PWMs of every 2 experiments in 2 different cell lines or samples. If there are more than 2 experiments available, throw out any experiment that does not show at least one motif having PCC>0.80 with a motif from any other experiment. If there are only two experiments and neither experiment has at least one motif with PCC>0.80, select the experiment with PWMs better supported by larger numbers of peaks.
-
-
-## <a name="software-and-data"></a>Software and Data Versions Used
-* Genome
-	* Human: GRCh38
-	* Mouse: GRCm38
-* Blacklists
-	* Amemiya et al. (2019)
-* FASTQC v0.11.8
-* TRIMMOMATIC v0.39
-* BOWTIE2 v2.3.5 (64-bit)
-* MACS2 v2.1.2 (https://github.com/taoliu/MACS)
-* MEME_CHIP v5.0.5
-* SAMTOOLS v1.9 (using htslib 1.9)
-* BEDTOOLS v2.28.0
-* IDR (https://github.com/nboley/idr)
-
-
-## <a name="analysis-scripts"></a>Analysis Scripts
-
-In addition to published tools, our analyses utilized the following custom scripts:
-
-1. `pwm.py`. **!!ADD DESCRIPTION!!**
-2. `motif_cluster.py`. **!!ADD DESCRIPTION!!**
-3. `consensus_pwm.py`. **!!ADD DESCRIPTION!!**
-4. `correlation.py`. **!!ADD DESCRIPTION!!**
-5. `peak_motif_ranges.R`. **!!ADD DESCRIPTION!!**
-6. `score_quantile.py`. **!!ADD DESCRIPTION!!**
-7. `top_peak_sel.py`. **!!ADD DESCRIPTION!!**
-
-
-## <a name="supplementary-perl-scripts"></a>Supplementary Perl Scripts
-
-Exact commands for running the pipeline for a single transcription factor (TF) are provided in the following Perl scripts:
-
-1. `chip_seq_download.pl`. This script downloads a user-provided list of ENCODE experiments, *i.e.*, the FASTQ data from ENCODE TF ChIP-seq assays. It should be called from the directory you wish to populate with directories and subdirectories containing the data. Input should be provided as a TAB-delimited input file with the following six (named) columns:
-
-	* `Target name`. The name of the transcription factor (*e.g.*, **adb-A**).
-	* `directory_name`. The name of the directory to create in which to store the transcription factor's data (*e.g.*, **adb_A**)
-	* `AC`. Accession ID of the relevant experiment (*e.g.*, **ENCSR609JDR**). Note that one experiment will be associated with more than one replicate and control, i.e., each Accession ID will have more than one row in the file. A new subdirectory within `directory_name` will be created for each unique `AC`.
-	* `type`. Must contain the value `replicate` or `control`. 
-	* `Library`. Library (assay) accession ID for the specific replicate or control (e.g., **ENCLB367MZH**). Individual assays that are used as controls will have `_control` appended to the name of their `Library` subdirectory.
-	* `url`. The ENCODE url for direct download of the FASTQ data associated with this `AC`/`Library` (*e.g.*, **https://www.encodeproject.org/files/ENCFF036RZV/@@download/ENCFF036RZV.fastq.gz**). This can be constructed by appending the FASTQ file ID to the end of `https://www.encodeproject.org/files/ENCFF036RZV/@@download/`.
-
-	For example, a short file for downloading some *Drosophila* FASTQ data is shown below, followed by a figure explaining the subdirectory structure that will be created in the process. This structure will be expected by the subsequent scripts (*e.g.*, `chip_seq_pipeline.pl`). Note that replicate and control subdirectories will contain one FASTQ file for single-end (SE) reads and two FASTQ files for paired-end (PE) reads; this is how the pipeline differentiates between the two.
-
-```
-Target name	directory_name	AC	type	Library	url
-abd-A	abd_A	ENCSR609JDR	replicate	ENCLB367MZH	https://www.encodeproject.org/files/ENCFF036RZV/@@download/ENCFF036RZV.fastq.gz
-abd-A	abd_A	ENCSR609JDR	replicate	ENCLB506QBD	https://www.encodeproject.org/files/ENCFF999PWE/@@download/ENCFF999PWE.fastq.gz
-abd-A	abd_A	ENCSR609JDR	replicate	ENCLB589GMA	https://www.encodeproject.org/files/ENCFF646QDZ/@@download/ENCFF646QDZ.fastq.gz
-abd-A	abd_A	ENCSR609JDR	control	ENCLB428GIT_control	https://www.encodeproject.org/files/ENCFF120UZS/@@download/ENCFF120UZS.fastq.gz
-Abd-B	Abd_B	ENCSR465HPZ	replicate	ENCLB009GTL	https://www.encodeproject.org/files/ENCFF469WCT/@@download/ENCFF469WCT.fastq.gz
-Abd-B	Abd_B	ENCSR465HPZ	replicate	ENCLB205LSV	https://www.encodeproject.org/files/ENCFF969SEG/@@download/ENCFF969SEG.fastq.gz
-Abd-B	Abd_B	ENCSR465HPZ	control	ENCLB730TLW_control	https://www.encodeproject.org/files/ENCFF730IEL/@@download/ENCFF730IEL.fastq.gz
-Abd-B	Abd_B	ENCSR692UBK	replicate	ENCLB526KET	https://www.encodeproject.org/files/ENCFF820QJV/@@download/ENCFF820QJV.fastq.gz
-Abd-B	Abd_B	ENCSR692UBK	replicate	ENCLB588NTL	https://www.encodeproject.org/files/ENCFF252IVG/@@download/ENCFF252IVG.fastq.gz
-Abd-B	Abd_B	ENCSR692UBK	control	ENCLB728VIS_control	https://www.encodeproject.org/files/ENCFF354CHN/@@download/ENCFF354CHN.fastq.gz
-achi	achi	ENCSR959SWC	replicate	ENCLB061SFK	https://www.encodeproject.org/files/ENCFF979YUJ/@@download/ENCFF979YUJ.fastq.gz
-achi	achi	ENCSR959SWC	replicate	ENCLB064AEO	https://www.encodeproject.org/files/ENCFF881ITO/@@download/ENCFF881ITO.fastq.gz
-achi	achi	ENCSR959SWC	replicate	ENCLB722DLY	https://www.encodeproject.org/files/ENCFF721FQK/@@download/ENCFF721FQK.fastq.gz
-achi	achi	ENCSR959SWC	control	ENCLB240LXI_control	https://www.encodeproject.org/files/ENCFF548BRW/@@download/ENCFF548BRW.fastq.gz
-```
-
-<img src="https://github.com/chpngyu/pipeline-of-chip-seq/blob/master/images/directory_structure.png">
-
-<img src="https://github.com/chpngyu/pipeline-of-chip-seq/blob/master/images/example.png">
-
-2. `chip_seq_pipeline.pl`. This script can be used after the experimental data have been downloaded using `chip_seq_download.pl`. Alternatively, the user may download their own data, provided they have placed them in directories precisely matching the structure described above. 
-
-	This script **must be called from within the directory corresponding to a single Target (TF)**. This means the user must first navigate to one of the `directory_name` values specified above, e.g., abd_A (input file example above) or ATF3 (input figure example above). This means that multiple TFs can be run in parallel, but that a single TF cannot. The reason for this choice is that several steps in the pipeline (e.g., BOWTIE2) allow the user to specify multiple CPUs for further parallelism.
-	
-	This script navigates the directory structure starting at this point, carrying out the first steps of the pipeline, proceeding from quality control (Trimmomatic; FASTQC) to read mapping (BOWTIE2) to peak calling (MACS2) to motif discovery (MEME-chip). **Of utmost importance, the user must alter the code block at the top of the script, `### MANUALLY SET GLOBAL VARIABLES ###`, to set paths to each tool installed on their system.** Specifically, the user must provide paths or values from the following:
-
-	* `FASTQC` (v0.11.8): path to software
-	* `TRIMMOMATIC` (v0.39): path to software
-	* `BOWTIE2` (v2.3.5 / 64-bit): path to software
-	* `SAMTOOLS` (v1.9 using htslib 1.9): path to software
-	* `BEDTOOLS` (v2.28.0): path to software
-	* `MACS2` (v2.1.2): path to software
-	* `MACS2_gsize`: a value, e.g. `hs` for *Homo sapeins* or `dm` for *Drosophila melanogaster*
-	* `PEAK_RADIUS`: a value, the radius of read calling peaks, *e.g.*, `100` to extend peaks 100 bp in either direction from the peak summit.
-	* `MIN_PEAK_SCORE`: a value, the minimum peak score required, *e.g.*, `13`.
-	* `MEME_CHIP` (v5.0.5): path to software
-	* `CCUT`: a value, the size (bp) to which peak regions should be trimmed for MEME-chip, e.g., `100`. This allows MEME-chip to examine the central region of the peaks for motifs while comparing to the flanking regions as a control for local sequence content. **!!CHECK WITH CHUN-PING!!**
-	* `adaptor_SE`: path to file (FASTA format) containing sequencing adaptors for single-end (SE) experiments, *e.g.*, `TruSeq3-SE.fa`
-	* `adaptor_PE`: path to file (FASTA format) containing sequencing adaptors for paired-end experiments, *e.g.*, `TruSeq3-PE-2.fa`
-	* `NUM_TOP_PEAKS`: a value, the number of top peaks to consider, *e.g.*, 500
-	* `MFOLD_MIN`: a value, the minimum fold depth enrichment required to call a peak for MACS2, *e.g.*, `5`. **!!CHECK WITH CHUN-PING!!**
-	* `MFOLD_MAX`: a value, the maximum fold depth enrichment allowed to call a peak for MACS2, *e.g.*, `50`. **!!CHECK WITH CHUN-PING!!**
-	* `blacklist`: path to file (BED format) containing a blacklist (excluded genome regions, including repetitive and low-complexity regions), *e.g.*, `ENCFF023CZC_sorted.bed`. See Amemiya *et al.* (2008).
-	* `GENOME_FASTA`: path to file (FASTA format) containing the primary genome assembly for the organism of interest, *e.g.*, `Homo_sapiens.GRCh38.dna.primary_assembly.fa`.
-	* `GENOME_IDX_PREFIX`: path to file (genome index) created using BOWTIE2, *e.g.*, `Homo_sapiens.GRCh38.dna.primary_assembly`. This can be accomplished using the following command: `bowtie2-build -f Homo_sapiens.GRCh38.dna.primary_assembly.fa Homo_sapiens.GRCh38.dna.primary_assembly`.
-	
-	The pipeline is shown below. Note that these tools use slightly different commands for single-end (SE) and paired-end (PE) reads (see script source code).
-
-<img src="https://github.com/chpngyu/pipeline-of-chip-seq/blob/master/images/perl_pipeline.png">
-
-3. `PWM_pipeline.pl`. IDR and PCC. **!!ADD DESCRIPTION!!**
-
-
-## <a name="supplementary-data"></a>Supplementary Data
-Supplementary data is available in the data folder within this repository. This includes the following files:
-
-* File 1. Description.
-* File 2. Description.
-* ...
-
-## <a name="acknowledgments"></a>Acknowledgments
-The authors acknowledgme XYZ...
-
-
-## <a name="citation"></a>Citation
-=======
-python motif_cluster.py motif_pcc.txt occurrences.txt
-```
-
-
-### (8) <a name="representative-motif-selection"></a>Representative motif selection
-
-**Single experiment**. For transcription factors represented by **one passing experiment** in the ENCODE data, replicates were merged and steps 5 ([peak calling](#peak-calling) and 6 ([motif discovery](#motif-discovery) were repeated using the merged replicates. Final representative motifs were called using these merged replicates.
-
-**Multiple experiments**.
-For transcription factors represented by **more than one passing experiment** in the ENCODE data, one experiment was selected to represent each biosample (e.g., cell or tissue type). The ranking method described in the manuscript was then used to select the top 500 peaks from all experiments, and step 6 ([motif discovery](#motif-discovery) was repeated using the top peaks. Final representative motifs were called using these top peaks.
-
-**!!CHUN-PING!! please edit the following, I do not understand it**
-
+!!TODO CP or CH please edit the following, I do not understand it:
 > However, before computing the ranking scores we should compute the similarities between the PWMs of every 2 experiments in 2 different cell lines or samples. If there are more than 2 experiments available, throw out any experiment that does not show at least one motif having KFV cos>=0.80 with a motif from any other experiment. In addition, we selected one represented experiment in same cell line or sample that having a best cos value of a PWM with another PWM in different sample. If there are only two experiments and neither experiment has at least one motif with cos>=0.80, select the experiment with PWMs better supported by larger numbers of peaks.
 
 
@@ -330,26 +201,27 @@ For transcription factors represented by **more than one passing experiment** in
 * Blacklists
 	* Amemiya et al. (2019)
 * FASTQC v0.11.8
-* TRIMMOMATIC v0.39
-* BOWTIE2 v2.3.5 (64-bit)
-* MACS2 v2.1.2 (https://github.com/taoliu/MACS)
-* MEME_CHIP v5.0.5
-* SAMTOOLS v1.9 (using htslib 1.9)
-* BEDTOOLS v2.28.0
-* IDR (https://github.com/nboley/idr)
+* TRIMMOMATIC v0.39 (Bolger et al. 2014)
+* BOWTIE2 v2.3.5 (64-bit) (Langmead et al. 2012)
+* MACS2 v2.1.2 (https://github.com/taoliu/MACS) (Zhang et al. 2008)
+* MEME_CHIP v5.0.5 (Bailey et al. 2009)
+* SAMTOOLS v1.9 (using htslib 1.9) (Li et al. 2009)
+* BEDTOOLS v2.28.0 (Quinlan et al. 2010)
+* IDR (https://github.com/nboley/idr) (Li et al. 2011)
 
 
 ## <a name="analysis-scripts"></a>Analysis Scripts
 
-In addition to published tools, our analyses utilized the following custom scripts:
- (Yu: I'll add descriptions, Chen-Hao: Chen-Hao can help!)
-1. `pwm.py`: This can take PWMs of interest from a MEME file.
-2. `motif_cluster.py`. **!!ADD DESCRIPTION!!**
-3. `consensus_pwm.py`. **!!ADD DESCRIPTION!!**
+In addition to published tools, our analyses utilized the following custom scripts: 
+(Yu: I'll add descriptions, Chen-Hao: Chen-Hao can help!)
+
+1. `pwm.py`. This can take PWMs of interest from a MEME file.
+2. `motif_cluster.py`. !!TODO please add
+3. `consensus_pwm.py`. !!TODO please add
 4. `correlation.py`. This can calculate similarity between PWMs in MEME with different correlation methods described in KFV.
-5. `peak_motif_ranges.R`. **!!ADD DESCRIPTION!!**
-6. `score_quantile.py`. **!!ADD DESCRIPTION!!**
-7. `top_peak_sel.py`. **!!ADD DESCRIPTION!!**
+5. `peak_motif_ranges.R`. !!TODO please add
+6. `score_quantile.py`. !!TODO please add
+7. `top_peak_sel.py`. !!TODO please add
 
 
 ## <a name="supplementary-perl-scripts"></a>Supplementary Perl Scripts
@@ -405,12 +277,12 @@ achi	achi	ENCSR959SWC	control	ENCLB240LXI_control	https://www.encodeproject.org/
 	* `PEAK_RADIUS`: a value, the radius of read calling peaks, *e.g.*, `100` to extend peaks 100 bp in either direction from the peak summit.
 	* `MIN_PEAK_SCORE`: a value, the minimum peak score required, *e.g.*, `13`.
 	* `MEME_CHIP` (v5.0.5): path to software
-	* `CCUT`: a value, the size (bp) to which peak regions should be trimmed for MEME-chip, e.g., `100 for maximum size of a sequence or 0 without any cutting down`. This allows MEME-ChIP to examine the central region of the peaks for motifs while comparing to the flanking regions as a control for local sequence content. Since the peak length was set to 200bp, sequences were no longer cutted.  **!!CHECK WITH CHUN-PING!!**
+	* `CCUT`: a value, the size (bp) to which peak regions should be trimmed for MEME-chip, e.g., `100`. This allows MEME-chip to examine the central region of the peaks for motifs while comparing to the flanking regions as a control for local sequence content. !!TODO please check this
 	* `adaptor_SE`: path to file (FASTA format) containing sequencing adaptors for single-end (SE) experiments, *e.g.*, `TruSeq3-SE.fa`
 	* `adaptor_PE`: path to file (FASTA format) containing sequencing adaptors for paired-end experiments, *e.g.*, `TruSeq3-PE-2.fa`
 	* `NUM_TOP_PEAKS`: a value, the number of top peaks to consider, *e.g.*, 500
-	* `MFOLD_MIN`: a value, the minimum fold depth enrichment required to call a peak for MACS2, *e.g.*, `5`. **!!CHECK WITH CHUN-PING!!**
-	* `MFOLD_MAX`: a value, the maximum fold depth enrichment allowed to call a peak for MACS2, *e.g.*, `50`. **!!CHECK WITH CHUN-PING!!**
+	* `MFOLD_MIN`: a value, the minimum fold depth enrichment required to call a peak for MACS2, *e.g.*, `5`. !!TODO please check this
+	* `MFOLD_MAX`: a value, the maximum fold depth enrichment allowed to call a peak for MACS2, *e.g.*, `50`. !!TODO please check this
 	* `blacklist`: path to file (BED format) containing a blacklist (excluded genome regions, including repetitive and low-complexity regions), *e.g.*, `ENCFF023CZC_sorted.bed`. See Amemiya *et al.* (2008).
 	* `GENOME_FASTA`: path to file (FASTA format) containing the primary genome assembly for the organism of interest, *e.g.*, `Homo_sapiens.GRCh38.dna.primary_assembly.fa`.
 	* `GENOME_IDX_PREFIX`: path to file (genome index) created using BOWTIE2, *e.g.*, `Homo_sapiens.GRCh38.dna.primary_assembly`. This can be accomplished using the following command: `bowtie2-build -f Homo_sapiens.GRCh38.dna.primary_assembly.fa Homo_sapiens.GRCh38.dna.primary_assembly`.
@@ -419,7 +291,7 @@ achi	achi	ENCSR959SWC	control	ENCLB240LXI_control	https://www.encodeproject.org/
 
 <img src="https://github.com/chpngyu/pipeline-of-chip-seq/blob/master/images/perl_pipeline.png">
 
-3. `PWM_pipeline.pl`. IDR and PCC. **!!ADD DESCRIPTION!!**
+3. `PWM_pipeline.pl`. IDR and PCC. !!TODO Chase will add description
 
 
 ## <a name="supplementary-data"></a>Supplementary Data
@@ -434,24 +306,21 @@ The authors acknowledgme XYZ...
 
 
 ## <a name="citation"></a>Citation
->>>>>>> Stashed changes
 When using this software, please refer to and cite:
 
->THE PAPER **!!ADD INFO!!**
->
->1. Trimmomatic: Bolger AM, Lohse M, Usadel B. Trimmomatic: a flexible trimmer for Illumina sequence data. Bioinformatics. 2014;30(15):2114-2120. doi:10.1093/bioinformatics/btu170
->2. Bowtie 2:  Langmead B, Salzberg S. Langmead B, Salzberg SL. Fast gapped-read alignment with Bowtie 2. Nat Methods. 2012;9(4):357-359. Published 2012 Mar 4. doi:10.1038/nmeth.1923
->3. SAMTOOLS: Li H, Handsaker B, Wysoker A, et al. The Sequence Alignment/Map format and SAMtools. Bioinformatics. 2009;25(16):2078-2079. doi:10.1093/bioinformatics/btp352
->4. BEDTOOLS: Quinlan AR, Hall IM. BEDTools: a flexible suite of utilities for comparing genomic features. Bioinformatics. 2010;26(6):841-842. doi:10.1093/bioinformatics/btq033
->5. MACS2: Zhang Y, Liu T, Meyer CA, et al. Model-based analysis of ChIP-Seq (MACS). Genome Biol. 2008;9(9):R137. doi:10.1186/gb-2008-9-9-r137
->6. MEME Suite: Bailey TL, Boden M, Buske FA, et al. MEME SUITE: tools for motif discovery and searching. Nucleic Acids Res. 2009;37(Web Server issue):W202-W208. doi:10.1093/nar/gkp335
->7. IDR: Li, Qunhua; Brown, James B.; Huang, Haiyan; Bickel, Peter J. Measuring reproducibility of high-throughput experiments. Ann. Appl. Stat. 5 (2011), no. 3, 1752--1779. doi:10.1214/11-AOAS466
+>THE PAPER #TODO
 
-1. and this page:
+and this page:
 
 >https://github.com/chpngyu/pipeline-of-chip-seq/
 
 
 ## <a name="references"></a>References
-* Amemiya HM, Kundaje A, Boyle AP. 2019. <a target="_blank" href="https://www.nature.com/articles/s41598-019-45839-z">The ENCODE Blacklist: Identification of Problematic Regions of the Genome</a>. *Scientific Reports* **9**:9354.
-
+* Amemiya HM, Kundaje A, Boyle AP. 2019. <a target="_blank" href="https://www.nature.com/articles/s41598-019-45839-z">The ENCODE Blacklist: Identification of Problematic Regions of the Genome</a>. *Scientific Reports* **9**: 9354.
+* * Bailey TL, Boden M, Buske FA, *et al.* 2009. <a target="_blank" href="https://academic.oup.com/nar/article/37/suppl_2/W202/1135092">MEME SUITE: tools for motif discovery and searching</a>. *Nucleic Acids Research* **37**: W202-W208.
+* Bolger AM, Lohse M, Usadel B. 2014. <a target="_blank" href="https://academic.oup.com/bioinformatics/article/30/15/2114/2390096">Trimmomatic: a flexible trimmer for Illumina sequence data</a>. *Bioinformatics* **30**(15): 2114-2120.
+* Langmead B, Salzberg S. Langmead B, Salzberg SL. 2012. <a target="_blank" href="https://www.nature.com/articles/nmeth.1923">Fast gapped-read alignment with Bowtie 2</a>. *Nature Methods* **9**(4): 357-359.
+* Li H, Handsaker B, Wysoker A, *et al.* 2009. <a target="_blank" href="https://pubmed.ncbi.nlm.nih.gov/19505943/">The Sequence Alignment/Map format and SAMtools</a>. *Bioinformatics* **25**(16): 2078-2079.
+* Li Q, Brown JB, Huang H, Bickel PJ. 2011. <a target="_blank" href="https://projecteuclid.org/euclid.aoas/1318514284">Measuring reproducibility of high-throughput experiments</a>. *Annals of Applied Statistics* **5**(3): 1752--1779.
+* Quinlan AR, Hall IM. 2010. <a target="_blank" href="https://academic.oup.com/bioinformatics/article/26/6/841/244688">BEDTools: a flexible suite of utilities for comparing genomic features</a>. *Bioinformatics* **26**(6): 841-842.
+* Zhang Y, Liu T, Meyer CA, *et al.* 2008. <a target="_blank" href="https://genomebiology.biomedcentral.com/articles/10.1186/gb-2008-9-9-r137">Model-based analysis of ChIP-Seq (MACS)</a>. *Genome Biology* **9**(9): R137.

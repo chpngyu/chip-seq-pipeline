@@ -1,4 +1,4 @@
-# ChIP-seq Pipeline
+# ChIP-seq analysis
 
 
 ## <a name="contents"></a>Contents
@@ -21,7 +21,7 @@
 * [References](#references)
 
 
-## <a name="computational-pipeline"></a>Computational Pipeline
+## <a name="computational-pipeline"></a>Computational pipeline
 
 Our pipeline is represented in the following figure and described in detail below.
 

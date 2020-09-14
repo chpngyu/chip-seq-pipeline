@@ -192,7 +192,7 @@ For transcription factors represented by **more than one passing experiment** in
 
 **!!CHUN-PING!! please edit the following, I do not understand it**
 
-> However, before computing the ranking scores we should compute the PCCs between the PWMs of every 2 experiments in 2 different cell lines or samples. If there are more than 2 experiments available, throw out any experiment that does not show at least one motif having PCC>0.80 with a motif from any other experiment. If there are only two experiments and neither experiment has at least one motif with PCC>0.80, select the experiment with PWMs better supported by larger numbers of peaks.
+> However, before computing the ranking scores we should compute the similarities between the PWMs of every 2 experiments in 2 different cell lines or samples. If there are more than 2 experiments available, throw out any experiment that does not show at least one motif having KFV cos>0.80 with a motif from any other experiment. In addition, we selected one represneted experiment in same cell line or sample that having a best cos value of a PWM with another PWM in different sample. If there are only two experiments and neither experiment has at least one motif with cos>0.80, select the experiment with PWMs better supported by larger numbers of peaks.
 
 
 ## <a name="software-and-data"></a>Software and Data Versions Used
@@ -277,7 +277,7 @@ achi	achi	ENCSR959SWC	control	ENCLB240LXI_control	https://www.encodeproject.org/
 	* `PEAK_RADIUS`: a value, the radius of read calling peaks, *e.g.*, `100` to extend peaks 100 bp in either direction from the peak summit.
 	* `MIN_PEAK_SCORE`: a value, the minimum peak score required, *e.g.*, `13`.
 	* `MEME_CHIP` (v5.0.5): path to software
-	* `CCUT`: a value, the size (bp) to which peak regions should be trimmed for MEME-chip, e.g., `100`. This allows MEME-chip to examine the central region of the peaks for motifs while comparing to the flanking regions as a control for local sequence content. **!!CHECK WITH CHUN-PING!!**
+	* `CCUT`: a value, the size (bp) to which peak regions should be trimmed for MEME-chip, e.g., `100 for maximum size of a sequence or 0 for no cutting down`. This allows MEME-chip to examine the central region of the peaks for motifs while comparing to the flanking regions as a control for local sequence content. **!!CHECK WITH CHUN-PING!!**
 	* `adaptor_SE`: path to file (FASTA format) containing sequencing adaptors for single-end (SE) experiments, *e.g.*, `TruSeq3-SE.fa`
 	* `adaptor_PE`: path to file (FASTA format) containing sequencing adaptors for paired-end experiments, *e.g.*, `TruSeq3-PE-2.fa`
 	* `NUM_TOP_PEAKS`: a value, the number of top peaks to consider, *e.g.*, 500

@@ -1,4 +1,4 @@
-# Pipeline of ChIP-seq analysis
+# ChIP-seq Pipeline
 
 
 ## <a name="contents"></a>Contents

@@ -317,7 +317,7 @@ and this page:
 
 ## <a name="references"></a>References
 * Amemiya HM, Kundaje A, Boyle AP. 2019. <a target="_blank" href="https://www.nature.com/articles/s41598-019-45839-z">The ENCODE Blacklist: Identification of Problematic Regions of the Genome</a>. *Scientific Reports* **9**: 9354.
-* * Bailey TL, Boden M, Buske FA, *et al.* 2009. <a target="_blank" href="https://academic.oup.com/nar/article/37/suppl_2/W202/1135092">MEME SUITE: tools for motif discovery and searching</a>. *Nucleic Acids Research* **37**: W202-W208.
+* Bailey TL, Boden M, Buske FA, *et al.* 2009. <a target="_blank" href="https://academic.oup.com/nar/article/37/suppl_2/W202/1135092">MEME SUITE: tools for motif discovery and searching</a>. *Nucleic Acids Research* **37**: W202-W208.
 * Bolger AM, Lohse M, Usadel B. 2014. <a target="_blank" href="https://academic.oup.com/bioinformatics/article/30/15/2114/2390096">Trimmomatic: a flexible trimmer for Illumina sequence data</a>. *Bioinformatics* **30**(15): 2114-2120.
 * Langmead B, Salzberg S. Langmead B, Salzberg SL. 2012. <a target="_blank" href="https://www.nature.com/articles/nmeth.1923">Fast gapped-read alignment with Bowtie 2</a>. *Nature Methods* **9**(4): 357-359.
 * Li H, Handsaker B, Wysoker A, *et al.* 2009. <a target="_blank" href="https://pubmed.ncbi.nlm.nih.gov/19505943/">The Sequence Alignment/Map format and SAMtools</a>. *Bioinformatics* **25**(16): 2078-2079.

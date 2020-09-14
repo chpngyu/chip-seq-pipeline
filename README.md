@@ -1,4 +1,4 @@
-# ChIP-seq analysis
+# ChIP-seq analysis and supplement
 
 
 ## <a name="contents"></a>Contents
@@ -185,13 +185,13 @@ python motif_cluster.py motif_pcc.txt occurrences.txt
 
 ### (8) <a name="representative-motif-selection"></a>Representative motif selection
 
-**Single experiment**. For transcription factors represented by **one passing experiment** in the ENCODE data, replicates were merged and steps 5 ([peak calling](#peak-calling) and 6 ([motif discovery](#motif-discovery) were repeated using the merged replicates. Final representative motifs were called using these merged replicates.
+**Single experiment**. For transcription factors represented by **one passing experiment** in the ENCODE data, replicates were merged and step 5 ([peak calling](#peak-calling)) was repeated using the merged replicates. Final representative motifs were called by repeating and 6 ([motif discovery](#motif-discovery)) using these merged-replicate peaks.
 
-**Multiple experiments**.
-For transcription factors represented by **more than one passing experiment** in the ENCODE data, one experiment was selected to represent each biosample (e.g., cell or tissue type). The ranking method described in the manuscript was then used to select the top 500 peaks from all experiments, and step 6 ([motif discovery](#motif-discovery) was repeated using the top peaks. Final representative motifs were called using these top peaks.
+**Multiple experiments**. **!!TODO** CP or CH please check that this is correct; what is **KFV**? can you provide a reference/explanation for KFV?
 
-!!TODO CP or CH please edit the following, I do not understand it:
-> However, before computing the ranking scores we should compute the similarities between the PWMs of every 2 experiments in 2 different cell lines or samples. If there are more than 2 experiments available, throw out any experiment that does not show at least one motif having KFV cos>=0.80 with a motif from any other experiment. In addition, we selected one represented experiment in same cell line or sample that having a best cos value of a PWM with another PWM in different sample. If there are only two experiments and neither experiment has at least one motif with cos>=0.80, select the experiment with PWMs better supported by larger numbers of peaks.
+For transcription factors represented by **more than one passing experiment** from **more than one biosample (*i.e.*, cell line or tissue types)** in the ENCODE data, one experiment was selected to represent each biosample. To do this, we first computed the similarities (KFV cos) between all pairs of motifs (*i.e.*, position weight matrices; PWMs) for all pairs of experiments utilizing different biosamples. For each biosample, the experiment was selected which shows the highest KFV cos value with another PWM from another experiment using a different biosample. Then, for each biosample, we selected the experiment having the PWM with the highest cos value with another PWM from another biosample. For TFs with 2 experiments, if neither experiment had at least one PWM with cos>=0.80, we selected the experiment whose top PWM had a higher number of occurrences in peak regions. For TFs with >2 experiments, experiments lacking at least one motif with KFV cos>=0.80 were excluded. Finally, using the representative experiments for all available biosamples, the ranking method described in the manuscript was used to select the top 500 peaks across all experiments. Final representative motifs were called by repeating step 6 ([motif discovery](#motif-discovery)) using these top peaks.
+
+For transcription factors represented by **more than one passing experiment** from **only one biosample** in the ENCODE data, different experiments were not compared. Instead, we directly used the ranking method described in the manuscript to select the top 500 peaks across all experiments. Final representative motifs were called by repeating step 6 ([motif discovery](#motif-discovery)) using these top peaks.
 
 
 ## <a name="software-and-data"></a>Software and Data Versions Used
@@ -216,12 +216,12 @@ In addition to published tools, our analyses utilized the following custom scrip
 (Yu: I'll add descriptions, Chen-Hao: Chen-Hao can help!)
 
 1. `pwm.py`. This can take PWMs of interest from a MEME file.
-2. `motif_cluster.py`. !!TODO please add
-3. `consensus_pwm.py`. !!TODO please add
+2. `motif_cluster.py`. **!!TODO** please add
+3. `consensus_pwm.py`. **!!TODO** please add
 4. `correlation.py`. This can calculate similarity between PWMs in MEME with different correlation methods described in KFV.
-5. `peak_motif_ranges.R`. !!TODO please add
-6. `score_quantile.py`. !!TODO please add
-7. `top_peak_sel.py`. !!TODO please add
+5. `peak_motif_ranges.R`. **!!TODO** please add
+6. `score_quantile.py`. **!!TODO** please add
+7. `top_peak_sel.py`. **!!TODO** please add
 
 
 ## <a name="supplementary-perl-scripts"></a>Supplementary Perl Scripts
@@ -277,12 +277,12 @@ achi	achi	ENCSR959SWC	control	ENCLB240LXI_control	https://www.encodeproject.org/
 	* `PEAK_RADIUS`: a value, the radius of read calling peaks, *e.g.*, `100` to extend peaks 100 bp in either direction from the peak summit.
 	* `MIN_PEAK_SCORE`: a value, the minimum peak score required, *e.g.*, `13`.
 	* `MEME_CHIP` (v5.0.5): path to software
-	* `CCUT`: a value, the size (bp) to which peak regions should be trimmed for MEME-chip, e.g., `100`. This allows MEME-chip to examine the central region of the peaks for motifs while comparing to the flanking regions as a control for local sequence content. !!TODO please check this
+	* `CCUT`: a value, the size (bp) to which peak regions should be trimmed for MEME-chip, e.g., `100`. This allows MEME-chip to examine the central region of the peaks for motifs while comparing to the flanking regions as a control for local sequence content. **!!TODO** please check this
 	* `adaptor_SE`: path to file (FASTA format) containing sequencing adaptors for single-end (SE) experiments, *e.g.*, `TruSeq3-SE.fa`
 	* `adaptor_PE`: path to file (FASTA format) containing sequencing adaptors for paired-end experiments, *e.g.*, `TruSeq3-PE-2.fa`
 	* `NUM_TOP_PEAKS`: a value, the number of top peaks to consider, *e.g.*, 500
-	* `MFOLD_MIN`: a value, the minimum fold depth enrichment required to call a peak for MACS2, *e.g.*, `5`. !!TODO please check this
-	* `MFOLD_MAX`: a value, the maximum fold depth enrichment allowed to call a peak for MACS2, *e.g.*, `50`. !!TODO please check this
+	* `MFOLD_MIN`: a value, the minimum fold depth enrichment required to call a peak for MACS2, *e.g.*, `5`. Not employed in our final analyses.
+	* `MFOLD_MAX`: a value, the maximum fold depth enrichment allowed to call a peak for MACS2, *e.g.*, `50`. Not employed in our final analyses.
 	* `blacklist`: path to file (BED format) containing a blacklist (excluded genome regions, including repetitive and low-complexity regions), *e.g.*, `ENCFF023CZC_sorted.bed`. See Amemiya *et al.* (2008).
 	* `GENOME_FASTA`: path to file (FASTA format) containing the primary genome assembly for the organism of interest, *e.g.*, `Homo_sapiens.GRCh38.dna.primary_assembly.fa`.
 	* `GENOME_IDX_PREFIX`: path to file (genome index) created using BOWTIE2, *e.g.*, `Homo_sapiens.GRCh38.dna.primary_assembly`. This can be accomplished using the following command: `bowtie2-build -f Homo_sapiens.GRCh38.dna.primary_assembly.fa Homo_sapiens.GRCh38.dna.primary_assembly`.
@@ -291,14 +291,14 @@ achi	achi	ENCSR959SWC	control	ENCLB240LXI_control	https://www.encodeproject.org/
 
 <img src="https://github.com/chpngyu/pipeline-of-chip-seq/blob/master/images/perl_pipeline.png">
 
-3. `PWM_pipeline.pl`. IDR and PCC. !!TODO Chase will add description
+3. `PWM_pipeline.pl`. IDR and PCC. **!!TODO** Chase will add description
 
 
 ## <a name="supplementary-data"></a>Supplementary Data
 Supplementary data is available in the data folder within this repository. This includes the following files:
 
-* File 1. Description.
-* File 2. Description.
+* File 1. Description. **!!TODO**
+* File 2. Description. **!!TODO**
 * ...
 
 ## <a name="acknowledgments"></a>Acknowledgments
@@ -308,7 +308,7 @@ The authors acknowledgme XYZ...
 ## <a name="citation"></a>Citation
 When using this software, please refer to and cite:
 
->THE PAPER #TODO
+>THE PAPER **!!TODO**
 
 and this page:
 

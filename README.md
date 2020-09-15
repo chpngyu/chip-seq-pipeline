@@ -187,7 +187,7 @@ python motif_cluster.py motif_pcc.txt occurrences.txt
 
 **Single experiment**. For transcription factors represented by **one passing experiment** in the ENCODE data, replicates were merged and step 5 ([peak calling](#peak-calling)) was repeated using the merged replicates. Final representative motifs were called by repeating and 6 ([motif discovery](#motif-discovery)) using these merged-replicate peaks.
 
-**Multiple experiments**. **!!TODO** CP or CH please check that this is correct; what is **KFV**? can you provide a reference/explanation for KFV?
+**Multiple experiments**. **!!TODO** CP or CH please check that this is correct; what is **KFV**? can you provide a reference/explanation for KFV? Ref: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2808352/
 
 For transcription factors represented by **more than one passing experiment** from **more than one biosample (*i.e.*, cell line or tissue type)** in the ENCODE data, one experiment was selected to represent each biosample. To do this, we first computed the similarities (KFV cos) between all pairs of motifs (*i.e.*, position weight matrices; PWMs) for all pairs of experiments utilizing different biosamples. For each biosample, the experiment was selected which shows the highest KFV cos value with another PWM from another experiment using a different biosample. Then, for each biosample, we selected the experiment having the PWM with the highest cos value with another PWM from another biosample. For TFs with 2 experiments, if neither experiment had at least one PWM with cos>=0.80, we selected the experiment whose top PWM had a higher number of occurrences in peak regions. For TFs with >2 experiments, experiments lacking at least one motif with KFV cos>=0.80 were excluded. Finally, using the representative experiments for all available biosamples, the ranking method described in the manuscript was used to select the top 500 peaks across all experiments. Final representative motifs were called by repeating step 6 ([motif discovery](#motif-discovery)) using these top peaks.
 
@@ -215,10 +215,10 @@ For transcription factors represented by **more than one passing experiment** fr
 In addition to published tools, our analyses utilized the following custom scripts: 
 (Yu: I'll add descriptions, Chen-Hao: Chen-Hao can help!)
 
-1. `pwm.py`. This can take PWMs of interest from a MEME file.
+1. `pwm.py`. D:This can take PWMs of interest from a MEME file. IN:PWMs(MEME format), a list of motifs' name. OUT: A MEME file include PWMs of interest.
 2. `motif_cluster.py`. **!!TODO** please add
 3. `consensus_pwm.py`. **!!TODO** please add
-4. `correlation.py`. This can calculate similarity between PWMs in MEME with different correlation methods described in KFV.
+4. `correlation.py`. D: This can calculate similarity between PWMs in MEME with different correlation methods described in KFV. IN: PWMs of interest (One PWM file: Pairwise correlation within the file; Two PWM files: Pairwise correlation between motifs in two files) Method: cos(default), pcc, eucl, and kl. OUT: a plain text file giving the similarity between each motif pairs selected from two inputs, separately.
 5. `peak_motif_ranges.R`. **!!TODO** please add
 6. `score_quantile.py`. **!!TODO** please add
 7. `top_peak_sel.py`. **!!TODO** please add

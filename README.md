@@ -219,7 +219,7 @@ For transcription factors represented by **more than one passing experiment** fr
 In addition to published tools, our analyses utilized the following custom scripts: 
 (Yu: I'll add descriptions, Chen-Hao: Chen-Hao can help!)
 
-1. `pwm.py`. **!!TODO: please check this is correct. Can the input have only one, or multiple PWMs?**
+1. `pwm.py`. **!!TODO: please check this is correct. Can the input have only one, or multiple PWMs? CH: Multiple PWMs in single MEME file**
 	* **Decription**: Trims PWMs from their ends until the remaining termini have an information content greater than or equal to some threshold value.
 	* **Input**: (1) `-i`, PWMs in MEME format; (2) `--trim`, threshold information content; and (3) `-o` path/name of output file.
 	* **Output**: A MEME file containing trimmed PWMs.

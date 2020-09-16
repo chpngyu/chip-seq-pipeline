@@ -1,4 +1,4 @@
-# ChIP-seq analysis and supplement
+# ChIP-seq analysis: supplementary material
 
 
 ## <a name="contents"></a>Contents
@@ -185,11 +185,15 @@ python motif_cluster.py motif_pcc.txt occurrences.txt
 
 ### (8) <a name="representative-motif-selection"></a>Representative motif selection
 
-**Single experiment**. For transcription factors represented by **one passing experiment** in the ENCODE data, replicates were merged and step 5 ([peak calling](#peak-calling)) was repeated using the merged replicates. Final representative motifs were called by repeating and 6 ([motif discovery](#motif-discovery)) using these merged-replicate peaks.
+**Single experiment**. 
+For transcription factors represented by **one passing experiment** in the ENCODE data, replicates were merged and step 5 ([peak calling](#peak-calling)) was repeated using the merged replicates. Final representative motifs were called by repeating and 6 ([motif discovery](#motif-discovery)) using these merged-replicate peaks.
 
-**Multiple experiments**. **!!TODO** CP or CH please check that this is correct; what is **KFV**? can you provide a reference/explanation for KFV? Ref: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2808352/
+**!!TODO** *CP or CH please check that the BELOW section is correct*
 
-For transcription factors represented by **more than one passing experiment** from **more than one biosample (*i.e.*, cell line or tissue type)** in the ENCODE data, one experiment was selected to represent each biosample. To do this, we first computed the similarities (KFV cos) between all pairs of motifs (*i.e.*, position weight matrices; PWMs) for all pairs of experiments utilizing different biosamples. For each biosample, the experiment was selected which shows the highest KFV cos value with another PWM from another experiment using a different biosample. Then, for each biosample, we selected the experiment having the PWM with the highest cos value with another PWM from another biosample. For TFs with 2 experiments, if neither experiment had at least one PWM with cos>=0.80, we selected the experiment whose top PWM had a higher number of occurrences in peak regions. For TFs with >2 experiments, experiments lacking at least one motif with KFV cos>=0.80 were excluded. Finally, using the representative experiments for all available biosamples, the ranking method described in the manuscript was used to select the top 500 peaks across all experiments. Final representative motifs were called by repeating step 6 ([motif discovery](#motif-discovery)) using these top peaks.
+**Multiple experiments**. 
+For transcription factors represented by **more than one passing experiment** from **more than one biosample (*i.e.*, cell line or tissue type)** in the ENCODE data, one experiment was selected to represent each biosample. To do this, we first computed the similarities (KFV cos; Xu and Su 2010) between all pairs of motifs (*i.e.*, position weight matrices; PWMs) for all pairs of experiments utilizing different biosamples. For each biosample, the experiment was selected which shows the highest KFV cos value with another PWM from another experiment using a different biosample. 
+
+For TFs with two biosamples, if neither biosample’s representative experiment had at least one PWM with cos>=0.80, we selected the experiment whose top PWM had the highest number of occurrences in peak regions. For TFs with >2 biosamples, experiments lacking at least one motif with KFV cos>=0.80 were excluded. Finally, using the representative experiments for all available biosamples, the ranking method described in the manuscript was used to select the top 500 peaks across all experiments. Final representative motifs were called by repeating step 6 ([motif discovery](#motif-discovery)) using these top peaks.
 
 For transcription factors represented by **more than one passing experiment** from **only one biosample** in the ENCODE data, different experiments were not compared. Instead, we directly used the ranking method described in the manuscript to select the top 500 peaks across all experiments. Final representative motifs were called by repeating step 6 ([motif discovery](#motif-discovery)) using these top peaks.
 
@@ -215,12 +219,27 @@ For transcription factors represented by **more than one passing experiment** fr
 In addition to published tools, our analyses utilized the following custom scripts: 
 (Yu: I'll add descriptions, Chen-Hao: Chen-Hao can help!)
 
-1. `pwm.py`. D:This can take PWMs of interest from a MEME file. IN:PWMs(MEME format), a list of motifs' name. OUT: A MEME file include PWMs of interest.
+1. `pwm.py`. **!!TODO: is it one or multiple PWMs?**
+	* **Decription**: Trims PWMs from their ends until the remaining termini have an information content greater than or equal to some threshold value.
+	* **Input**: (1) PWMs in MEME format (`-i`); (2) threshold information content (`--trim`); and (3) path/name of output file (`-o`).
+	* **Output**: A MEME file containing trimmed PWMs.
+	* **Example**:
+
+`python3.6 pwm.py -i myPWM.meme --trim 0.3 -o myPWM_trimmed.meme`
+
 2. `motif_cluster.py`. **!!TODO** please add
+
 3. `consensus_pwm.py`. **!!TODO** please add
-4. `correlation.py`. D: This can calculate similarity between PWMs in MEME with different correlation methods described in KFV. IN: PWMs of interest (One PWM file: Pairwise correlation within the file; Two PWM files: Pairwise correlation between motifs in two files) Method: cos(default), pcc, eucl, and kl. OUT: a plain text file giving the similarity between each motif pairs selected from two inputs, separately.
+
+4. `correlation.py`. 
+	* **Description**: This can calculate similarity between PWMs in MEME with different correlation methods described in KFV.
+	* **Input**: PWMs of interest (One PWM file: Pairwise correlation within the file; Two PWM files: Pairwise correlation between motifs in two files) Method: cos(default), pcc, eucl, and kl. 
+	* **Output**: a plain text file giving the similarity between each motif pairs selected from two inputs, separately.
+
 5. `peak_motif_ranges.R`. **!!TODO** please add
+
 6. `score_quantile.py`. **!!TODO** please add
+
 7. `top_peak_sel.py`. **!!TODO** please add
 
 
@@ -323,4 +342,5 @@ and this page:
 * Li H, Handsaker B, Wysoker A, *et al.* 2009. <a target="_blank" href="https://pubmed.ncbi.nlm.nih.gov/19505943/">The Sequence Alignment/Map format and SAMtools</a>. *Bioinformatics* **25**(16): 2078-2079.
 * Li Q, Brown JB, Huang H, Bickel PJ. 2011. <a target="_blank" href="https://projecteuclid.org/euclid.aoas/1318514284">Measuring reproducibility of high-throughput experiments</a>. *Annals of Applied Statistics* **5**(3): 1752--1779.
 * Quinlan AR, Hall IM. 2010. <a target="_blank" href="https://academic.oup.com/bioinformatics/article/26/6/841/244688">BEDTools: a flexible suite of utilities for comparing genomic features</a>. *Bioinformatics* **26**(6): 841-842.
+* Xu M, Su Z. 2010. <a target="_blank" href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2808352/">A Novel Alignment-Free Method for Comparing Transcription Factor Binding Site Motifs</a>. *PLoS ONE* **5**:e8797.
 * Zhang Y, Liu T, Meyer CA, *et al.* 2008. <a target="_blank" href="https://genomebiology.biomedcentral.com/articles/10.1186/gb-2008-9-9-r137">Model-based analysis of ChIP-Seq (MACS)</a>. *Genome Biology* **9**(9): R137.

@@ -219,22 +219,30 @@ For transcription factors represented by **more than one passing experiment** fr
 In addition to published tools, our analyses utilized the following custom scripts: 
 (Yu: I'll add descriptions, Chen-Hao: Chen-Hao can help!)
 
-1. `pwm.py`. **!!TODO: is it one or multiple PWMs?**
+1. `pwm.py`. **!!TODO: please check this is correct. Can the input have only one, or multiple PWMs?**
 	* **Decription**: Trims PWMs from their ends until the remaining termini have an information content greater than or equal to some threshold value.
-	* **Input**: (1) PWMs in MEME format (`-i`); (2) threshold information content (`--trim`); and (3) path/name of output file (`-o`).
+	* **Input**: (1) `-i`, PWMs in MEME format; (2) `--trim`, threshold information content; and (3) `-o` path/name of output file.
 	* **Output**: A MEME file containing trimmed PWMs.
 	* **Example**:
 
-`python3.6 pwm.py -i myPWM.meme --trim 0.3 -o myPWM_trimmed.meme`
+		`python3.6 pwm.py -i myPWM.meme --trim 0.3 -o myPWM_trimmed.meme`
 
-2. `motif_cluster.py`. **!!TODO** please add
+2. `motif_cluster.py`. **!!TODO: please check this is correct.**
+	* **Description**: Determines groups (clusters) of similar PWMs based on their correlations.
+	* **Input**: (1) the motif_pcc.txt files produced by `correlation.py` (first argument, unnamed); and (2) **!!TODO??**
+	* **Output**: Groups (clusters) of PWMs... **!!TODO??**. Printed to STOUT, here redirected to the file `motif_cluster.txt`.
+
+		`python3.6 motif_cluster.py motif_pcc.txt occurrences.txt > motif_cluster.txt`
 
 3. `consensus_pwm.py`. **!!TODO** please add
 
-4. `correlation.py`. 
-	* **Description**: This can calculate similarity between PWMs in MEME with different correlation methods described in KFV.
-	* **Input**: PWMs of interest (One PWM file: Pairwise correlation within the file; Two PWM files: Pairwise correlation between motifs in two files) Method: cos(default), pcc, eucl, and kl. 
-	* **Output**: a plain text file giving the similarity between each motif pairs selected from two inputs, separately.
+4. `correlation.py`. **!!TODO: please check this is correct.**
+	* **Description**: Calculates similarity between PWMs in MEME format with user-defined correlation methods described in KFV.
+	* **Input**: (1) `--method`, method for calculating correlation (cos, pcc, eucl, and kl); (2) `-m1`, PWMs in MEME format (if one PWM file, calculates pairwise correlations within the file; if two PWM files, calculates pairwise correlation between the two files); and (3) `-o` path/name of output file.
+	* **Output**: a plain text file giving the similarity between each pair of motifs.
+	* **Example**:
+
+		`python3.6 correlation.py --method pcc -m1 PWM_trimmed.meme -o motif_pcc.txt`
 
 5. `peak_motif_ranges.R`. **!!TODO** please add
 

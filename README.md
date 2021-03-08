@@ -84,8 +84,8 @@ SUFFIX=_trim_paired.fastq.gz
 cd $BASE_PATH/GENE_ID/replicate1
 
 # replace _read_ID_ with your IDs
-export R1=QC/_read_ID_$SUFFIX
-export R2=QC/_read_ID_$SUFFIX
+R1=QC/_read_ID_$SUFFIX
+R2=QC/_read_ID_$SUFFIX
 
 # do alignment
 time bowtie2 -p 4 -x $GENOME -1 $R1 -2 $R2 -S alignment.sam 2> log.txt

@@ -78,9 +78,9 @@ Reads were preprocessed and aligned reads to the appropriate reference genome (e
 
 ```Shell
 #set global variables
-export GENOME=/home/user/human/genome/Homo_sapiens.GRCh38.dna.primary_assemblyexport
+GENOME=/home/user/human/genome/Homo_sapiens.GRCh38.dna.primary_assemblyexport
 BASE_PATH=/home/user/human/ChIP-seq/
-export SUFFIX=_trim_paired.fastq.gz
+SUFFIX=_trim_paired.fastq.gz
 cd $BASE_PATH/GENE_ID/replicate1
 
 # replace _read_ID_ with your IDs
@@ -91,7 +91,7 @@ export R2=QC/_read_ID_$SUFFIX
 time bowtie2 -p 4 -x $GENOME -1 $R1 -2 $R2 -S alignment.sam 2> log.txt
 
 # if single-read, use
-export READ=QC/_read_ID_$SUFFIX
+READ=QC/_read_ID_$SUFFIX
 time bowtie2 -p 4 -x $GENOME -U $READ -S alignment.sam 2> log.txt
 
 #remove unmapped reads and duplicated reads (268= Read unmapped (4) or  Mate unmapped (8) or  Not primary alignment (256))
@@ -109,9 +109,9 @@ Peak calling was performed using MACS2 (200bp each, ±100bp from the peak summit
 
 ```Shell
 #set global variables
-export CURR=/home/user/human/ChIP-seq/
+CURR=/home/user/human/ChIP-seq/
 cd $CURR/GENE_ID/replicate1
-export CONTROL="control1.bam control2.bam" # control string may include multiple files
+CONTROL="control1.bam control2.bam" # control string may include multiple files
 
 # individual replicate, paired-end (PE) reads
 macs2 callpeak -t unique_alignment_sorted_rd.bam -c $CONTROL -f BAMPE --gsize hs --outdir macs2
@@ -133,10 +133,10 @@ Motif discovery was performed using MEME-chip as described in the manuscript, us
 
 ```Shell
 #set global variables
-export CURR=/home/user/human/ChIP-seq/
-export GENOME=/home/user/human/genome/Homo_sapiens.GRCh38.dna.primary_assembly.fa
-export BlackList=/home/human/blacklist/ENCFF023CZC_sorted.bed
-export NoTopPeak=500 # number of top peaks to analyze
+CURR=/home/user/human/ChIP-seq/
+GENOME=/home/user/human/genome/Homo_sapiens.GRCh38.dna.primary_assembly.fa
+BlackList=/home/human/blacklist/ENCFF023CZC_sorted.bed
+NoTopPeak=500 # number of top peaks to analyze
 
 # navigate to replicate directory, extract peaks
 cd $CURR/GENE_ID/replicate1/

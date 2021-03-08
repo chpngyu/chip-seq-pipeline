@@ -50,6 +50,7 @@ Read quality control (QC) was performed using Trimmomatic, with command-line arg
 BASE=/home/your/working/directory
 Trimmomatic_Path=/where/is/Trimmomatic
 Trimmomatic='java -jar /path/Trimmomatic-0.36/trimmomatic-0.36.jar'
+FASTQC=/where/is/fastqc
 
 # replace LGJ20-XQ41_R1_001 and LGJ20-XQ41_R2_001 with your read IDs
 cd $BASE/Sample_one/

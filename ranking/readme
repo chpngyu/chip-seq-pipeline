@@ -7,5 +7,9 @@ The rankingTF.sh will run the pipeline in three steps:
 2. Obtain represnetative peaks for a TF that has done in mutiple biosample and choose the top 500 peaks
 3. Run motif discovry tool, MEME-ChIP, and gather the inferred PWMs.
 
-To run it, please download python scripts and store them in a folder, and create another new working folder for runing and stroing outputs by this pipeline.
-The more information can see in the bash shell script of rankingTF.sh.
+To run it, please download python scripts and store them in a folder, and create another new working folder where it includes rankingTF.sh,
+then run the shell script by
+bash rankingTF.sh
+all the outputs will be stored in the working folder.
+For more information, please see rankingTF.sh script.
+

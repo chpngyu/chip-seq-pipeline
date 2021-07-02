@@ -1,5 +1,6 @@
 
-Runing presentative PWMs for a TF that have multiple expriments in one or more biosamples
+## Runing presentative PWMs for a TF that have multiple expriments in one or more biosamples
+
 User need to provide a table where the name of a TF, its biosample, expremweental ID, and the mac2 peak file (see peaks_for_experiments).
 The rankingTF.sh will run the pipeline in three steps:
 1. Obtain represnetative peaks for a TF wich has multiple expriments in a same biosample using ranking method

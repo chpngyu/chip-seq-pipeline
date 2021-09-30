@@ -336,11 +336,11 @@ The authors acknowledge XYZ...
 ## <a name="citation"></a>Citation
 When using this software, please refer to and cite:
 
->THE PAPER **!!TODO**
+>Yu CP, Kuo CH, Nelson CW, *et al.* 2021. <a target="_blank" href="https://www.pnas.org/content/118/20/e2026754118">Discovering unknown human and mouse transcription factor binding sites and their characteristics from ChIP-seq data</a>. *Proceedings of the National Academy of Sciences* **118**(20).
 
 and this page:
 
->https://github.com/chpngyu/pipeline-of-chip-seq/
+>https://github.com/chpngyu/chip-seq-pipeline/
 
 
 ## <a name="references"></a>References

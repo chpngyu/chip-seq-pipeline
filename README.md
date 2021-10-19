@@ -324,7 +324,7 @@ Exact commands for running the pipeline for a single transcription factor (TF) a
 
 ## Acknowledgments
 
-The authors acknowledge XYZ...
+We thank Frank Hsu, Federico Giorgi, Naoki Osato, Jeff Vierstra, and Meng Wang for helpful comments. This study was supported by Academia Sinica (AS-SUMMIT-109) and by Ministry of Science and Technology Taiwan (MOST 107-2311-B-001-016-MY3).
 
 ## Citation
 

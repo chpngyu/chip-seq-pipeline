@@ -230,8 +230,7 @@ In addition to published tools, our analyses utilized the following custom scrip
     * **Output**: `-o` path/name of output file: a MEME file containing trimmed PWMs.
     * **Example**:
       * `python3.6 pwm.py -m myPWM.meme --trim 0.3 -o myPWM_trimmed.meme`
-    In addtion, the output can show the information of PWM, i.g. IC, length of PWM, and consensus, instead of showing the PWM
-    * **Example**:
+    * **Example**: In addtion, the output can show the information of PWM, i.g. IC, length of PWM, and consensus, instead of showing the PWM.
       * `python3.6 pwm.py -m myPWM.meme --name a_few_motifs --info -o myPWM_info.txt`
 
 2. `motif_cluster.py`.

@@ -185,8 +185,6 @@ python motif_cluster.py motif_pcc.txt occurrences.txt
 **Single experiment**.
 For transcription factors represented by **one passing experiment** in the ENCODE data, replicates were merged and step 5 ([peak calling](#peak-calling)) was repeated using the merged replicates. Final representative motifs were called by repeating and 6 ([motif discovery](#motif-discovery)) using these merged-replicate peaks.
 
-**!!TODO** *CP or CH please check that the BELOW section is correct*
-
 **Multiple experiments**.
 For transcription factors represented by **more than one passing experiment** from **more than one biosample (*i.e.*, cell line or tissue type)** in the ENCODE data, one experiment was selected to represent each biosample. To do this, we first computed the similarities (KFV cos; Xu and Su 2010) between all pairs of motifs (*i.e.*, position weight matrices; PWMs) for all pairs of experiments utilizing different biosamples. For each biosample, the experiment was selected which shows the highest KFV cos value with another PWM from another experiment using a different biosample.
 
@@ -225,15 +223,18 @@ For transcription factors represented by **more than one passing experiment** fr
 In addition to published tools, our analyses utilized the following custom scripts:
 (Yu: I'll add descriptions, Chen-Hao: Chen-Hao can help!)
 
-1. `pwm.py`. **!!TODO: please check this is correct. Can the input have only one, or multiple PWMs? CH: Multiple PWMs in single MEME file**
+1. `pwm.py`.
 
-    * **Decription**: Trims PWMs from their ends until the remaining termini have an information content greater than or equal to some threshold value.
-    * **Input**: (1) `-i`, PWMs in MEME format; (2) `--trim`, threshold information content; and (3) `-o` path/name of output file.
-    * **Output**: A MEME file containing trimmed PWMs.
+    * **Decription**: Select or trim PWMs from their ends until the remaining termini have an information content greater than or equal to some threshold value.
+    * **Input**: (1) `-m`, PWMs in MEME format; Options, (2) `--trim`, threshold of information content; or (3) `--name`, only take the PWMs by giving motif IDs.
+    * **Output**: `-o` path/name of output file: a MEME file containing trimmed PWMs.
     * **Example**:
-      * `python3.6 pwm.py -i myPWM.meme --trim 0.3 -o myPWM_trimmed.meme`
+      * `python3.6 pwm.py -m myPWM.meme --trim 0.3 -o myPWM_trimmed.meme`
+    In addtion, the output can show the information of PWM, i.g. IC, length of PWM, and consensus, instead of showing the PWM
+    * **Example**:
+      * `python3.6 pwm.py -m myPWM.meme --name a_few_motifs --info -o myPWM_info.txt`
 
-2. `motif_cluster.py`. **!!TODO: please check this is correct.**
+2. `motif_cluster.py`.
 
     * **Description**: Determines groups (clusters) of similar PWMs based on their correlations.
     * **Input**: (1) the motif_pcc.txt files produced by `correlation.py` (first argument, unnamed); and (2) **!!TODO??**

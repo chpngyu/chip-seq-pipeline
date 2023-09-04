@@ -330,8 +330,10 @@ if __name__ == '__main__':
                         help="if give a list of PWM's names in a file, the output will only show for the given PWMs")
     parser.add_argument('--trim', type=float, default=0,
                         help='trimming bases in the two ends of motifs which have lower ICs (default=0, no trimming)')
+    parser.add_argument('--info', action='store_true',
+                        help='show the information for each PWM instead of writing the PWM')
     parser.add_argument('-o', '--output', type=str, default='output.meme',
-                        help='filename for the output (default: output.meme)')
+                        help='give a filename for the output (default: output.meme)')
     args = parser.parse_args()
 
     motifs = MEME(args.motif)
@@ -352,6 +354,21 @@ if __name__ == '__main__':
     else:
         err_msg = f'Invalid value of IC was set ({args.trim}). The available range is  0 <= IC < 2.'
         raise RuntimeError(err_msg)
-    no_motif = motifs.write(args.output, names)
-    print(f'Totally {no_motif} motifs have been written to {args.output}')
+    if args.info is not None:
+        no_motif = 0
+        with open(args.output, 'w') as out_file:
+            out_file.write('Motif ID\tIC\tMotif length\tConsensus sequence\n')
+            for name in motifs:
+                if names is not None and name not in names:
+                    continue
+                pwm = motifs.get(name)
+                length = len(pwm)
+                ic = sum(motif.IC(pwm))
+                consensus = motif.consensus(pwm)
+                out_file.write(f'{name}\t{ic}\t{length}\t{consensus}\n')
+                no_motif += 1
+        print(f'A total of {no_motif} motifs has been processed, please see {args.output}')
+    else:
+        no_motif = motifs.write(args.output, names)
+        print(f'Totally {no_motif} motifs have been written to {args.output}')
     print(f'Done.')

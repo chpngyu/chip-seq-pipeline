@@ -1,7 +1,7 @@
 # ChIP-seq analysis: supplementary material
 
 ## Contents
-
+* [Graphical Abstract](#graphical-abstract)
 * [Computational Pipeline](#computational-pipeline)
   * (1) [Data download](#1-data-download)
   * (2) [Control selection](#2-control-selection)
@@ -19,7 +19,10 @@
 * [Citation](#citation)
 * [References](#references)
 
-## Computational pipeline
+## Graphical Abstract
+![Abstract](images/graphical_abstract.png)
+
+## Computational Pipeline
 
 Our pipeline is represented in the following figure and described in detail below.
 

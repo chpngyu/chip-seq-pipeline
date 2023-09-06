@@ -220,41 +220,56 @@ For transcription factors represented by **more than one passing experiment** fr
 
 ## Analysis Scripts
 
-In addition to published tools, our analyses utilized the following custom scripts:
-(Yu: I'll add descriptions, Chen-Hao: Chen-Hao can help!)
+Our analyses utilized the following custom scripts:
 
-1. `pwm.py`.
+1. `pwm.py`
 
     * **Decription**: Select or trim PWMs from their ends until the remaining termini have an information content greater than or equal to some threshold value.
     * **Input**: (1) `-m`, PWMs in MEME format; Options, (2) `--trim`, threshold of information content; or (3) `--name`, only take the PWMs by giving motif IDs.
     * **Output**: `-o` path/name of output file: a MEME file containing trimmed PWMs.
     * **Example**:
-      * `python3.6 pwm.py -m myPWM.meme --trim 0.3 -o myPWM_trimmed.meme`
+      * `python pwm.py -m myPWM.meme --trim 0.3 -o myPWM_trimmed.meme`
     * **Example**: In addtion, the output can show the information of PWM, i.g. IC, length of PWM, and consensus, instead of showing the PWM.
-      * `python3.6 pwm.py -m myPWM.meme --name a_few_motifs --info -o myPWM_info.txt`
+      * `python pwm.py -m myPWM.meme --name a_few_motifs --info -o myPWM_info.txt`
 
-2. `motif_cluster.py`.
+2. `motif_cluster.py`
 
     * **Description**: Determines groups (clusters) of similar PWMs based on their correlations.
-    * **Input**: (1) the motif_pcc.txt files produced by `correlation.py` (first argument, unnamed); and (2) **!!TODO??**
-    * **Output**: Groups (clusters) of PWMs... **!!TODO??**. Printed to STOUT, here redirected to the file `motif_cluster.txt`.
-      * `python3.6 motif_cluster.py motif_pcc.txt occurrences.txt > motif_cluster.txt`
+    * **Input**: (1) the motif_pcc.txt file is pairwise correlation bettwen two motifs which is produced by `correlation.py` (first argument, unnamed); and
+       (2) the mootif_ic.txt file is information content for each motif, which is produced by pwm.py with adding an argument --info
+    * **Output**: Groups (clusters) of PWMs to the file `motif_cluster.txt`.
+      * `python motif_cluster.py -c motif_pcc.txt occurrences.txt -i mootif_ic.txt -o motif_cluster.txt`
 
-3. `consensus_pwm.py`. **!!TODO** please add
-
-4. `correlation.py`. **!!TODO: please check this is correct.**
+3. `correlation.py`
 
     * **Description**: Calculates similarity between PWMs in MEME format with user-defined correlation methods described in KFV.
     * **Input**: (1) `--method`, method for calculating correlation (cos, pcc, eucl, and kl); (2) `-m1`, PWMs in MEME format (if one PWM file, calculates pairwise correlations within the file; if two PWM files, calculates pairwise correlation between the two files); and (3) `-o` path/name of output file.
     * **Output**: a plain text file giving the similarity between each pair of motifs.
     * **Example**:
-      * `python3.6 correlation.py --method pcc -m1 PWM_trimmed.meme -o motif_pcc.txt`
+      * `python correlation.py --method pcc -m1 PWM_trimmed.meme -o motif_pcc.txt`
 
-5. `peak_motif_ranges.R`. **!!TODO** please add
+4. `consensus.py` **!!TODO** need to be revised
 
-6. `score_quantile.py`. **!!TODO** please add
+   * **Description**: Obtain consensus peaks for a TF that has been studied in mutiple experiments
+   * **Input**:
+   * **Output**
+   * **Example**:
 
-7. `top_peak_sel.py`. **!!TODO** please add
+5. `score_quantile.py`
+   * **Description**: Rank the peaks of a TF based on the mac2 scores. This is backend script used by consensus.py
+   * **Input**: (1) `-s` peak set (summit.bed by macs2) (2) `-g' set a group tag for the peak set. A same group tag will view as the same expriment.
+               (3) '-e' make an extention forward and backward for the peak set. The deafult is 0 (no extension).
+   * **Output**: Rank and add tag for the peak set
+   * **Example**:
+     * `python score_quantile.py -s summit.bed -g Liver -o ranked_summit.bed`
+
+6. `top_peak_sel.py`. **!!TODO** need to be revised
+   * **Description**: select top peaks from the ranked peaks obtained in mutiple experiments
+   * **Input**:
+   * **Output**
+   * **Example**:
+     * `python top_peak_sel.py -i peak_sets.bed --top 500 -o top_peaks.bed`
+
 
 ## Supplementary Perl Scripts
 
